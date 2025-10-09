@@ -16,6 +16,7 @@ dependencies:
   video_trimmer: ^5.0.0
   image_picker: ^1.0.7
   shared_preferences: ^2.2.2
+  gallery_saver_plus: ^3.2.9
 dev_dependencies:
   flutter_test:
     sdk: flutter

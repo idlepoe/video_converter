@@ -5,7 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b3acd73c-1a96-499b-b264-025b326fac26" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README copy.md" beforeDir="false" afterPath="$PROJECT_DIR$/README copy.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/convert_result/controllers/convert_result_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/convert_result/controllers/convert_result_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/convert_result/views/convert_result_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/convert_result/views/convert_result_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/loading/controllers/loading_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/loading/controllers/loading_controller.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

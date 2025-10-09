@@ -6,6 +6,7 @@ import 'package:ffmpeg_kit_flutter_new/session.dart';
 import 'package:ffmpeg_kit_flutter_new/statistics.dart';
 import 'package:ffmpeg_kit_flutter_new/log.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:gallery_saver_plus/gallery_saver.dart';
 import 'package:video_converter/app/routes/app_pages.dart';
 import 'package:video_converter/app/modules/select_video/controllers/select_video_controller.dart';
 
@@ -53,16 +54,11 @@ class LoadingController extends GetxController {
       final speed = savedSettings['speed'] ?? 1.0;
       final selectedResolution = savedSettings['selectedResolution'] ?? 0;
 
-      // 출력 파일 경로 생성 (갤러리로 저장)
-      final externalDir = await getExternalStorageDirectory();
-      final picturesDir = Directory(
-        '${externalDir!.path}/Pictures/VideoConverter',
-      );
-      if (!await picturesDir.exists()) {
-        await picturesDir.create(recursive: true);
-      }
-      final outputFileName = '${DateTime.now().millisecondsSinceEpoch}.webp';
-      final outputFile = File('${picturesDir.path}/$outputFileName');
+      // 출력 파일 경로 생성 (임시 디렉토리에 저장 후 갤러리로 이동)
+      final tempDir = await getTemporaryDirectory();
+      final outputFileName =
+          'video_converter_${DateTime.now().millisecondsSinceEpoch}.webp';
+      final outputFile = File('${tempDir.path}/$outputFileName');
       outputPath.value = outputFile.path;
 
       statusMessage.value =
@@ -126,18 +122,61 @@ class LoadingController extends GetxController {
           // 변환 완료 시 호출
           final returnCode = await session.getReturnCode();
           if (ReturnCode.isSuccess(returnCode)) {
-            statusMessage.value = 'Conversion completed!';
-            progress.value = 1.0;
-            isLoading.value = false;
+            statusMessage.value = 'Saving to gallery...';
 
-            // 결과 화면으로 이동
-            Get.offNamed(
-              Routes.CONVERT_RESULT,
-              arguments: {
-                'outputPath': outputFile.path,
-                'originalPath': videoFile.path,
-              },
-            );
+            try {
+              // GallerySaver를 사용하여 갤러리에 저장
+              final bool? success = await GallerySaver.saveVideo(
+                outputFile.path,
+              );
+
+              if (success == true) {
+                statusMessage.value =
+                    'Conversion completed and saved to gallery!';
+                progress.value = 1.0;
+                isLoading.value = false;
+
+                // 결과 화면으로 이동
+                Get.offNamed(
+                  Routes.CONVERT_RESULT,
+                  arguments: {
+                    'outputPath': outputFile.path,
+                    'originalPath': videoFile.path,
+                    'savedToGallery': true,
+                  },
+                );
+              } else {
+                statusMessage.value =
+                    'Conversion completed but failed to save to gallery';
+                progress.value = 1.0;
+                isLoading.value = false;
+
+                // 갤러리 저장 실패해도 결과 화면으로 이동
+                Get.offNamed(
+                  Routes.CONVERT_RESULT,
+                  arguments: {
+                    'outputPath': outputFile.path,
+                    'originalPath': videoFile.path,
+                    'savedToGallery': false,
+                  },
+                );
+              }
+            } catch (e) {
+              statusMessage.value =
+                  'Conversion completed but gallery save failed: $e';
+              progress.value = 1.0;
+              isLoading.value = false;
+
+              // 갤러리 저장 실패해도 결과 화면으로 이동
+              Get.offNamed(
+                Routes.CONVERT_RESULT,
+                arguments: {
+                  'outputPath': outputFile.path,
+                  'originalPath': videoFile.path,
+                  'savedToGallery': false,
+                },
+              );
+            }
           } else {
             statusMessage.value = 'Conversion failed';
             isLoading.value = false;
@@ -146,7 +185,7 @@ class LoadingController extends GetxController {
         },
         (Log log) {
           // 로그 출력 (선택사항)
-          print('FFmpeg Log: ${log.getMessage()}');
+          // print('FFmpeg Log: ${log.getMessage()}');
         },
         (Statistics statistics) {
           // 진행률 업데이트 (간단한 시간 기반 진행률)
