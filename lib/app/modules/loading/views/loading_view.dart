@@ -131,50 +131,6 @@ class LoadingView extends GetView<LoadingController> {
                   ),
                 ),
                 const SizedBox(height: 32),
-
-                // 알림 설정 체크박스
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey[200]!),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: true,
-                            onChanged: (value) {
-                              // 체크박스 상태 변경 로직
-                            },
-                            activeColor: const Color(0xFF0064FF),
-                          ),
-                          const Text(
-                            'Get conversion notification',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Feel free to step out! We\'ll notify you when the conversion is done!',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF0064FF),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-
                 // 상태 메시지
                 Obx(
                   () => Text(

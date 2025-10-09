@@ -114,6 +114,7 @@ class SelectVideoController extends GetxController {
     required double quality,
     required String format,
     required double speed,
+    required String selectedFormat,
   }) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -122,6 +123,7 @@ class SelectVideoController extends GetxController {
       await prefs.setDouble('convert_quality', quality);
       await prefs.setString('convert_format', format);
       await prefs.setDouble('convert_speed', speed);
+      await prefs.setString('convert_selected_format', selectedFormat);
     } catch (e) {
       Get.snackbar('Error', 'Failed to save convert settings');
     }
@@ -139,6 +141,7 @@ class SelectVideoController extends GetxController {
         'quality': prefs.getDouble('convert_quality') ?? 75.0,
         'format': prefs.getString('convert_format') ?? 'webp',
         'speed': prefs.getDouble('convert_speed') ?? 1.0,
+        'selectedFormat': prefs.getString('convert_selected_format') ?? 'WebP',
       };
     } catch (e) {
       return {
@@ -147,6 +150,7 @@ class SelectVideoController extends GetxController {
         'quality': 75.0,
         'format': 'webp',
         'speed': 1.0,
+        'selectedFormat': 'WebP',
       };
     }
   }
@@ -221,6 +225,7 @@ class SelectVideoController extends GetxController {
           videoFilePath: videoFilePath,
           savedSettings: savedSettings,
           onConvert: (options) async {
+            print('--------------------options: $options');
             await handleConvert(options);
           },
         );
@@ -237,6 +242,7 @@ class SelectVideoController extends GetxController {
         quality: options['quality'],
         format: options['format'],
         speed: options['speed'],
+        selectedFormat: options['selectedFormat'], // selectedFormat 추가
       );
 
       // LoadingView로 이동

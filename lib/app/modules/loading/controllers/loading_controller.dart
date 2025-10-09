@@ -49,20 +49,24 @@ class LoadingController extends GetxController {
 
       // 저장된 변환 설정 가져오기
       final savedSettings = await selectVideoController.loadConvertSettings();
+      print('LoadingController: Loaded settings: $savedSettings');
       final quality = savedSettings['quality'] ?? 75.0;
       final fps = savedSettings['fps'] ?? 30.0;
       final speed = savedSettings['speed'] ?? 1.0;
       final selectedResolution = savedSettings['selectedResolution'] ?? 0;
+      final selectedFormat = savedSettings['selectedFormat'] ?? 'WebP';
+      print('LoadingController: Selected format: $selectedFormat');
 
       // 출력 파일 경로 생성 (임시 디렉토리에 저장 후 갤러리로 이동)
       final tempDir = await getTemporaryDirectory();
+      final fileExtension = _getFileExtension(selectedFormat);
       final outputFileName =
-          'video_converter_${DateTime.now().millisecondsSinceEpoch}.webp';
+          'video_converter_${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
       final outputFile = File('${tempDir.path}/$outputFileName');
       outputPath.value = outputFile.path;
 
       statusMessage.value =
-          'Converting to WebP (Quality: ${quality.toInt()}%, FPS: ${fps.toInt()})...';
+          'Converting to $selectedFormat (Quality: ${quality.toInt()}%, FPS: ${fps.toInt()})...';
 
       // 원본 비디오 정보 가져오기
       final videoWidth = selectVideoController.videoWidth.value ?? 0;
@@ -105,15 +109,28 @@ class LoadingController extends GetxController {
         vfOptions.add('setpts=${1 / speed}*PTS');
       }
 
-      // FFmpeg 명령어 구성 (README의 fluent-ffmpeg 로직을 명령어로 변환)
+      // FFmpeg 명령어 구성 (선택된 포맷에 맞는 코덱 사용)
       String command = '-i "${videoFile.path}"';
-      command += ' -c:v libwebp';
+      command += ' -c:v ${_getVideoCodec(selectedFormat)}';
+      command += ' -c:a ${_getAudioCodec(selectedFormat)}';
       command += ' -r $targetFps';
-      command += ' -quality ${quality.toInt()}';
+
+      // 포맷별 특별한 옵션 적용
+      if (selectedFormat == 'WebP') {
+        command += ' -quality ${quality.toInt()}';
+        command += ' -loop 0';
+      } else if (selectedFormat == 'MP4' || selectedFormat == 'MOV') {
+        command += ' -crf ${_getCrfValue(quality)}';
+      } else {
+        command += ' -q:v ${_getQValue(quality)}';
+      }
+
       command += ' -vf ${vfOptions.join(',')}';
-      command += ' -loop 0';
       command += ' -progress pipe:1';
       command += ' "${outputFile.path}"';
+
+      // FFmpeg 명령어 출력
+      print('FFmpeg Command: $command');
 
       // FFmpeg 실행
       await FFmpegKit.executeAsync(
@@ -123,20 +140,28 @@ class LoadingController extends GetxController {
           final returnCode = await session.getReturnCode();
           if (ReturnCode.isSuccess(returnCode)) {
             statusMessage.value = 'Saving to gallery...';
-            print('Gallery Save: Starting to save WebP image to gallery...');
+            print(
+              'Gallery Save: Starting to save $selectedFormat to gallery...',
+            );
             print('Gallery Save: Output file path: ${outputFile.path}');
 
             try {
-              // GallerySaver를 사용하여 갤러리에 저장 (WebP는 이미지이므로 saveImage 사용)
-              print('Gallery Save: Calling GallerySaver.saveImage()...');
-              final bool? success = await GallerySaver.saveImage(
-                outputFile.path,
-              );
+              // GallerySaver를 사용하여 갤러리에 저장 (WebP는 이미지, 나머지는 비디오)
+              bool? success;
+              if (selectedFormat == 'WebP') {
+                print('Gallery Save: Calling GallerySaver.saveImage()...');
+                success = await GallerySaver.saveImage(outputFile.path);
+              } else {
+                print('Gallery Save: Calling GallerySaver.saveVideo()...');
+                success = await GallerySaver.saveVideo(outputFile.path);
+              }
 
               print('Gallery Save: GallerySaver result: $success');
 
               if (success == true) {
-                print('Gallery Save: SUCCESS - WebP image saved to gallery');
+                print(
+                  'Gallery Save: SUCCESS - $selectedFormat saved to gallery',
+                );
 
                 // 갤러리 저장 성공 시 원본 파일 삭제
                 try {
@@ -224,4 +249,76 @@ class LoadingController extends GetxController {
   }
 
   void increment() => count.value++;
+
+  // 포맷별 파일 확장자 반환
+  String _getFileExtension(String format) {
+    switch (format) {
+      case 'WebP':
+        return 'webp';
+      case 'MP4':
+        return 'mp4';
+      case 'MKV':
+        return 'mkv';
+      case 'AVI':
+        return 'avi';
+      case 'FLV':
+        return 'flv';
+      case 'MOV':
+        return 'mov';
+      default:
+        return 'webp';
+    }
+  }
+
+  // 포맷별 비디오 코덱 반환
+  String _getVideoCodec(String format) {
+    switch (format) {
+      case 'WebP':
+        return 'libwebp';
+      case 'MP4':
+        return 'libx264';
+      case 'MKV':
+        return 'libx264';
+      case 'AVI':
+        return 'mpeg4';
+      case 'FLV':
+        return 'libx264';
+      case 'MOV':
+        return 'libx264';
+      default:
+        return 'libwebp';
+    }
+  }
+
+  // 포맷별 오디오 코덱 반환
+  String _getAudioCodec(String format) {
+    switch (format) {
+      case 'WebP':
+        return 'copy'; // WebP는 오디오 없음
+      case 'MP4':
+        return 'aac';
+      case 'MKV':
+        return 'libvorbis';
+      case 'AVI':
+        return 'mp3';
+      case 'FLV':
+        return 'mp3';
+      case 'MOV':
+        return 'aac';
+      default:
+        return 'copy';
+    }
+  }
+
+  // 품질을 CRF 값으로 변환 (0-51, 낮을수록 고품질)
+  int _getCrfValue(double quality) {
+    // quality 0-100을 CRF 51-0으로 변환
+    return (51 - (quality / 100 * 51)).round().clamp(0, 51);
+  }
+
+  // 품질을 Q 값으로 변환 (0-31, 낮을수록 고품질)
+  int _getQValue(double quality) {
+    // quality 0-100을 Q 31-0으로 변환
+    return (31 - (quality / 100 * 31)).round().clamp(0, 31);
+  }
 }

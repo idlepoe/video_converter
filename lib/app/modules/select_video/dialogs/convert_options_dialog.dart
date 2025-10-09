@@ -29,6 +29,7 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
   late double quality;
   late String format;
   late double speed;
+  late String selectedFormat;
 
   @override
   void initState() {
@@ -43,6 +44,7 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
       quality = widget.savedSettings['quality'];
       format = widget.savedSettings['format'];
       speed = widget.savedSettings['speed'];
+      selectedFormat = widget.savedSettings['selectedFormat'] ?? 'WebP';
     });
   }
 
@@ -72,6 +74,19 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
                   color: Colors.black,
                 ),
               ),
+              const SizedBox(height: 24),
+
+              // Format Selection Section
+              const Text(
+                'Output Format',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildFormatSelector(),
               const SizedBox(height: 24),
 
               // Resolution Section
@@ -171,8 +186,80 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
       'quality': quality,
       'format': format,
       'speed': speed,
+      'selectedFormat': selectedFormat,
     };
     await widget.onConvert(options);
+  }
+
+  Widget _buildFormatSelector() {
+    final formats = [
+      {'name': 'WebP', 'value': 'WebP', 'description': '애니메이션 WebP → 영상처럼 다룸'},
+      {
+        'name': 'MP4',
+        'value': 'MP4',
+        'description': 'H.264/H.265, AAC/MP3/Opus 등 오디오 조합',
+      },
+      {
+        'name': 'MKV',
+        'value': 'MKV',
+        'description': 'H.264/H.265/VP9, Opus/Vorbis/MP3 등',
+      },
+      {
+        'name': 'AVI',
+        'value': 'AVI',
+        'description': 'MPEG-4 Part 2, MP3, etc.',
+      },
+      {'name': 'FLV', 'value': 'FLV', 'description': 'H.264 + MP3/AAC'},
+      {
+        'name': 'MOV',
+        'value': 'MOV',
+        'description': 'QuickTime, H.264, AAC, MP3 등',
+      },
+    ];
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: selectedFormat,
+          isExpanded: true,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          items: formats.map((format) {
+            return DropdownMenuItem<String>(
+              value: format['value']!,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    format['name']!,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    format['description']!,
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              setState(() {
+                selectedFormat = newValue;
+              });
+            }
+          },
+        ),
+      ),
+    );
   }
 
   Widget _buildResolutionOptions() {
@@ -223,52 +310,44 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
       });
     }
 
-    return Column(
-      children: resolutions.map((resolution) {
-        final isSelected = selectedResolution == resolution['index'];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          child: InkWell(
-            onTap: () {
-              setState(() {
-                selectedResolution = resolution['index'];
-              });
-            },
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFFE9F1FF) : Colors.grey[50],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: isSelected
-                      ? const Color(0xFF0064FF)
-                      : Colors.grey[300]!,
-                  width: 1,
+    // selectedResolution이 사용 가능한 옵션 중에 있는지 확인
+    final availableIndices = resolutions.map((r) => r['index'] as int).toList();
+    final currentValue = availableIndices.contains(selectedResolution)
+        ? selectedResolution
+        : availableIndices.first;
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<int>(
+          value: currentValue,
+          isExpanded: true,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          items: resolutions.map((resolution) {
+            return DropdownMenuItem<int>(
+              value: resolution['index'] as int,
+              child: Text(
+                resolution['name'] as String,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
                 ),
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      resolution['name'] as String,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: isSelected
-                            ? const Color(0xFF0064FF)
-                            : Colors.black87,
-                      ),
-                    ),
-                  ),
-                  if (isSelected)
-                    const Icon(Icons.check, color: Color(0xFF0064FF), size: 20),
-                ],
-              ),
-            ),
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
+          onChanged: (int? newValue) {
+            if (newValue != null) {
+              setState(() {
+                selectedResolution = newValue;
+              });
+            }
+          },
+        ),
+      ),
     );
   }
 
@@ -279,19 +358,28 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
           setState(() {
             fps = value;
           });
-        }),
+        }, defaultValue: 30.0),
         const SizedBox(height: 16),
         _buildSlider(context, 'Quality', quality, 1, 100, (value) {
           setState(() {
             quality = value;
           });
-        }),
+        }, defaultValue: 85.0),
         const SizedBox(height: 16),
-        _buildSlider(context, 'Playback Speed', speed, 0.5, 2.0, (value) {
-          setState(() {
-            speed = value;
-          });
-        }, isSpeed: true),
+        _buildSlider(
+          context,
+          'Playback Speed',
+          speed,
+          0.5,
+          2.0,
+          (value) {
+            setState(() {
+              speed = value;
+            });
+          },
+          isSpeed: true,
+          defaultValue: 1.0,
+        ),
       ],
     );
   }
@@ -304,17 +392,33 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
     double max,
     Function(double) onChanged, {
     bool isSpeed = false,
+    double? defaultValue,
   }) {
     return Row(
       children: [
         SizedBox(
           width: 100,
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
+          child: InkWell(
+            onTap: () {
+              if (defaultValue != null) {
+                onChanged(defaultValue);
+              }
+            },
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey[400]!, width: 0.5),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
             ),
           ),
         ),

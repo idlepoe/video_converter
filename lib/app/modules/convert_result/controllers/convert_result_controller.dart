@@ -26,6 +26,12 @@ class ConvertResultController extends GetxController {
   @override
   void onReady() {
     super.onReady();
+    // 비디오가 초기화되었고 WebP가 아닌 경우 자동 재생
+    if (isVideoInitialized.value &&
+        !isWebP.value &&
+        videoPlayerController.value != null) {
+      videoPlayerController.value!.play();
+    }
   }
 
   @override
@@ -70,6 +76,9 @@ class ConvertResultController extends GetxController {
         fileName.value = file.path.split('/').last;
 
         isVideoInitialized.value = true;
+
+        // 비디오 초기화 완료 후 자동 재생
+        videoPlayerController.value!.play();
       }
     } catch (e) {
       print('Video player initialization error: $e');
