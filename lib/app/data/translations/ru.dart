@@ -61,6 +61,21 @@ const Map<String, String> ruTranslations = {
   'rotate_video_error': 'Произошла ошибка при повороте видео: @error',
   'rotate_video_file_not_created': 'Повернутый файл не был создан.',
   'rotate_video_rotate_angle': '@angle°',
+  'rotate_90_degrees': '90°',
+  'rotate_180_degrees': '180°',
+  'rotate_270_degrees': '270°',
+  'rotate_video_unsupported_angle': 'Неподдерживаемый угол поворота: @angle',
+  'rotate_video_ffmpeg_error': 'Выполнение FFmpeg не удалось: @error',
+  'rotate_video_file_size_calculating': 'Вычисление размера файла...',
+  'rotate_video_thumbnail_warning_title': 'Важное уведомление',
+
+  // Format Descriptions
+  'format_webp_description': 'Анимированный WebP → обрабатывается как видео',
+  'format_mp4_description': 'H.264/H.265, аудио комбинации AAC/MP3/Opus',
+  'format_mkv_description': 'H.264/H.265/VP9, Opus/Vorbis/MP3 и др.',
+  'format_avi_description': 'MPEG-4 Part 2, MP3, и др.',
+  'format_flv_description': 'H.264 + MP3/AAC',
+  'format_mov_description': 'QuickTime, H.264, AAC, MP3 и др.',
 
   // Loading & Conversion
   'converting': 'Конвертация...',

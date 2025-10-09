@@ -1,38 +1,301 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Convert videos with privacy protection. Support 6 formats & 8 languages. Transform your videos effortlessly between WebP, MP4, MKV, AVI, FLV, and MOV formats while keeping your data completely private.">
+  <meta name="keywords" content="video converter, video format, privacy, WebP, MP4, MKV, AVI, FLV, MOV, multilingual, rotate, trim">
+  <meta name="author" content="VideoConverter">
+  
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="video_converter">
+  <meta name="apple-mobile-web-app-title" content="VideoConverter">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>video_converter</title>
+  <title>VideoConverter - Privacy-First Video Converter</title>
   <link rel="manifest" href="manifest.json">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .header {
+      text-align: center;
+      color: white;
+      padding: 60px 0;
+    }
+    
+    .header h1 {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .header p {
+      font-size: 1.3rem;
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+    
+    .download-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 15px 30px;
+      background: #2196F3;
+      color: white;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+    }
+    
+    .btn:hover {
+      background: #1976D2;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+    }
+    
+    .btn.secondary {
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+    }
+    
+    .btn.secondary:hover {
+      background: white;
+      color: #2196F3;
+    }
+    
+    .content {
+      background: white;
+      border-radius: 20px;
+      padding: 60px;
+      margin: 40px 0;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+      margin: 60px 0;
+    }
+    
+    .feature {
+      text-align: center;
+      padding: 30px;
+      border-radius: 15px;
+      background: #f8f9fa;
+      transition: transform 0.3s ease;
+    }
+    
+    .feature:hover {
+      transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+    
+    .feature h3 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: #2196F3;
+    }
+    
+    .formats {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin: 30px 0;
+    }
+    
+    .format-tag {
+      background: #e3f2fd;
+      color: #1976D2;
+      padding: 8px 16px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .languages {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 30px 0;
+    }
+    
+    .language-tag {
+      background: #f3e5f5;
+      color: #7b1fa2;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+    
+    .privacy-section {
+      background: #e8f5e8;
+      padding: 40px;
+      border-radius: 15px;
+      margin: 40px 0;
+      text-align: center;
+    }
+    
+    .privacy-section h2 {
+      color: #2e7d32;
+      margin-bottom: 20px;
+    }
+    
+    .footer {
+      text-align: center;
+      color: white;
+      padding: 40px 0;
+      opacity: 0.8;
+    }
+    
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+      
+      .content {
+        padding: 30px;
+        margin: 20px 0;
+      }
+      
+      .download-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+  <div class="container">
+    <header class="header">
+      <h1>VideoConverter</h1>
+      <p>Transform your videos effortlessly with complete privacy protection</p>
+      <div class="download-buttons">
+        <a href="https://play.google.com/store/apps/dev?id=8906147989440714764" class="btn" target="_blank" rel="noopener noreferrer">Download for Android</a>
+        <a href="https://the-gold-bug.web.app/" class="btn secondary" target="_blank" rel="noopener noreferrer">Learn More</a>
+      </div>
+    </header>
+
+    <main class="content">
+      <section>
+        <h2 style="text-align: center; margin-bottom: 30px; color: #2196F3; font-size: 2.5rem;">Key Features</h2>
+        
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">🎬</div>
+            <h3>Multiple Formats</h3>
+            <p>Convert between WebP, MP4, MKV, AVI, FLV, and MOV formats with high quality output.</p>
+            <div class="formats">
+              <span class="format-tag">WebP</span>
+              <span class="format-tag">MP4</span>
+              <span class="format-tag">MKV</span>
+              <span class="format-tag">AVI</span>
+              <span class="format-tag">FLV</span>
+              <span class="format-tag">MOV</span>
+            </div>
+          </div>
+          
+          <div class="feature">
+            <div class="feature-icon">🔒</div>
+            <h3>Complete Privacy</h3>
+            <p>All video processing happens locally on your device. Your videos never leave your phone.</p>
+          </div>
+          
+          <div class="feature">
+            <div class="feature-icon">🌍</div>
+            <h3>Multilingual Support</h3>
+            <p>Enjoy the app in your preferred language with full localization support.</p>
+            <div class="languages">
+              <span class="language-tag">English</span>
+              <span class="language-tag">Español</span>
+              <span class="language-tag">हिन्दी</span>
+              <span class="language-tag">Bahasa</span>
+              <span class="language-tag">日本語</span>
+              <span class="language-tag">한국어</span>
+              <span class="language-tag">Русский</span>
+              <span class="language-tag">中文</span>
+            </div>
+          </div>
+          
+          <div class="feature">
+            <div class="feature-icon">⚙️</div>
+            <h3>Advanced Controls</h3>
+            <p>Rotate and trim videos with precision. Adjust quality, resolution, FPS, and playback speed.</p>
+          </div>
+          
+          <div class="feature">
+            <div class="feature-icon">📱</div>
+            <h3>Easy to Use</h3>
+            <p>User-friendly interface with real-time conversion progress and direct gallery saving.</p>
+          </div>
+          
+          <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <h3>Fast Processing</h3>
+            <p>Optimized for mobile devices with efficient video processing algorithms.</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="privacy-section">
+        <h2>🔒 Privacy First</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 20px;">Your videos never leave your device. All conversion happens locally, ensuring your personal content stays secure and private.</p>
+        <p>Perfect for content creators, social media enthusiasts, and anyone who needs reliable video conversion with complete privacy protection.</p>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; 2025 VideoConverter. All rights reserved.</p>
+      <p>Download now and experience the difference!</p>
+      <p style="margin-top: 20px;">
+        <a href="etc/policy.html" style="color: white; text-decoration: underline; margin-right: 20px;">개인정보처리방침</a>
+        <a href="etc/policy.html" style="color: white; text-decoration: underline;">Privacy Policy</a>
+      </p>
+    </footer>
+  </div>
 </body>
 </html>

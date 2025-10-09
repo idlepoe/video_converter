@@ -58,6 +58,21 @@ const Map<String, String> koTranslations = {
   'rotate_video_error': '비디오 회전 중 오류가 발생했습니다: @error',
   'rotate_video_file_not_created': '회전된 파일이 생성되지 않았습니다.',
   'rotate_video_rotate_angle': '@angle°',
+  'rotate_90_degrees': '90°',
+  'rotate_180_degrees': '180°',
+  'rotate_270_degrees': '270°',
+  'rotate_video_unsupported_angle': '지원되지 않는 회전 각도: @angle',
+  'rotate_video_ffmpeg_error': 'FFmpeg 실행 실패: @error',
+  'rotate_video_file_size_calculating': '파일 크기 계산 중...',
+  'rotate_video_thumbnail_warning_title': '중요한 안내',
+
+  // Format Descriptions
+  'format_webp_description': '애니메이션 WebP → 영상처럼 다룸',
+  'format_mp4_description': 'H.264/H.265, AAC/MP3/Opus 등 오디오 조합',
+  'format_mkv_description': 'H.264/H.265/VP9, Opus/Vorbis/MP3 등',
+  'format_avi_description': 'MPEG-4 Part 2, MP3, etc.',
+  'format_flv_description': 'H.264 + MP3/AAC',
+  'format_mov_description': 'QuickTime, H.264, AAC, MP3 등',
 
   // Loading & Conversion
   'converting': '변환 중...',

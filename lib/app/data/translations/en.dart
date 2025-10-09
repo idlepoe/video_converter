@@ -61,6 +61,21 @@ const Map<String, String> enTranslations = {
   'rotate_video_error': 'An error occurred while rotating video: @error',
   'rotate_video_file_not_created': 'Rotated file was not created.',
   'rotate_video_rotate_angle': '@angle°',
+  'rotate_90_degrees': '90°',
+  'rotate_180_degrees': '180°',
+  'rotate_270_degrees': '270°',
+  'rotate_video_unsupported_angle': 'Unsupported rotation angle: @angle',
+  'rotate_video_ffmpeg_error': 'FFmpeg execution failed: @error',
+  'rotate_video_file_size_calculating': 'Calculating file size...',
+  'rotate_video_thumbnail_warning_title': 'Important Notice',
+
+  // Format Descriptions
+  'format_webp_description': 'Animated WebP → treated as video',
+  'format_mp4_description': 'H.264/H.265, AAC/MP3/Opus audio combinations',
+  'format_mkv_description': 'H.264/H.265/VP9, Opus/Vorbis/MP3 etc.',
+  'format_avi_description': 'MPEG-4 Part 2, MP3, etc.',
+  'format_flv_description': 'H.264 + MP3/AAC',
+  'format_mov_description': 'QuickTime, H.264, AAC, MP3 etc.',
 
   // Loading & Conversion
   'converting': 'Converting...',

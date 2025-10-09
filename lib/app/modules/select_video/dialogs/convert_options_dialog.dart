@@ -194,27 +194,35 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
 
   Widget _buildFormatSelector() {
     final formats = [
-      {'name': 'WebP', 'value': 'WebP', 'description': '애니메이션 WebP → 영상처럼 다룸'},
+      {
+        'name': 'WebP',
+        'value': 'WebP',
+        'descriptionKey': 'format_webp_description',
+      },
       {
         'name': 'MP4',
         'value': 'MP4',
-        'description': 'H.264/H.265, AAC/MP3/Opus 등 오디오 조합',
+        'descriptionKey': 'format_mp4_description',
       },
       {
         'name': 'MKV',
         'value': 'MKV',
-        'description': 'H.264/H.265/VP9, Opus/Vorbis/MP3 등',
+        'descriptionKey': 'format_mkv_description',
       },
       {
         'name': 'AVI',
         'value': 'AVI',
-        'description': 'MPEG-4 Part 2, MP3, etc.',
+        'descriptionKey': 'format_avi_description',
       },
-      {'name': 'FLV', 'value': 'FLV', 'description': 'H.264 + MP3/AAC'},
+      {
+        'name': 'FLV',
+        'value': 'FLV',
+        'descriptionKey': 'format_flv_description',
+      },
       {
         'name': 'MOV',
         'value': 'MOV',
-        'description': 'QuickTime, H.264, AAC, MP3 등',
+        'descriptionKey': 'format_mov_description',
       },
     ];
 
@@ -244,7 +252,7 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
                     ),
                   ),
                   Text(
-                    format['description']!,
+                    format['descriptionKey']!.toString().tr,
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],

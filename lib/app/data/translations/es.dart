@@ -61,6 +61,21 @@ const Map<String, String> esTranslations = {
   'rotate_video_error': 'Ocurrió un error al rotar el video: @error',
   'rotate_video_file_not_created': 'No se creó el archivo rotado.',
   'rotate_video_rotate_angle': '@angle°',
+  'rotate_90_degrees': '90°',
+  'rotate_180_degrees': '180°',
+  'rotate_270_degrees': '270°',
+  'rotate_video_unsupported_angle': 'Ángulo de rotación no soportado: @angle',
+  'rotate_video_ffmpeg_error': 'Falló la ejecución de FFmpeg: @error',
+  'rotate_video_file_size_calculating': 'Calculando tamaño del archivo...',
+  'rotate_video_thumbnail_warning_title': 'Aviso Importante',
+
+  // Format Descriptions
+  'format_webp_description': 'WebP animado → tratado como video',
+  'format_mp4_description': 'H.264/H.265, combinaciones de audio AAC/MP3/Opus',
+  'format_mkv_description': 'H.264/H.265/VP9, Opus/Vorbis/MP3 etc.',
+  'format_avi_description': 'MPEG-4 Part 2, MP3, etc.',
+  'format_flv_description': 'H.264 + MP3/AAC',
+  'format_mov_description': 'QuickTime, H.264, AAC, MP3 etc.',
 
   // Loading & Conversion
   'converting': 'Convirtiendo...',

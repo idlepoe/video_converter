@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:video_trimmer/video_trimmer.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 class VideoTrimWidget extends StatefulWidget {
@@ -49,10 +48,6 @@ class _VideoTrimWidgetState extends State<VideoTrimWidget> {
     });
 
     try {
-      final directory = await getTemporaryDirectory();
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final outputPath = '${directory.path}/trimmed_video_$timestamp.mp4';
-
       await _trimmer.saveTrimmedVideo(
         startValue: _startValue,
         endValue: _endValue,
@@ -62,12 +57,25 @@ class _VideoTrimWidgetState extends State<VideoTrimWidget> {
           });
 
           if (outputPath != null) {
-            // trim된 파일 경로를 콜백으로 전달
-            widget.onTrimComplete(outputPath);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('trim_error_message'.tr)),
+            // 원본 파일의 확장자로 변경
+            final originalFile = File(widget.filePath);
+            final extension = originalFile.path.split('.').last;
+            final newPath = outputPath.replaceAll(
+              RegExp(r'\.mp4$'),
+              '.$extension',
             );
+
+            // 파일명 변경
+            if (File(outputPath).existsSync()) {
+              File(outputPath).renameSync(newPath);
+            }
+
+            // trim된 파일 경로를 콜백으로 전달
+            widget.onTrimComplete(newPath);
+          } else {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('trim_error_message'.tr)));
           }
         },
       );
@@ -75,9 +83,9 @@ class _VideoTrimWidgetState extends State<VideoTrimWidget> {
       setState(() {
         _progressVisibility = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${'trim_error_message'.tr}: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${'trim_error_message'.tr}: $e')));
     }
   }
 
@@ -106,8 +114,9 @@ class _VideoTrimWidgetState extends State<VideoTrimWidget> {
             child: Text(
               'complete'.tr,
               style: TextStyle(
-                color:
-                    _progressVisibility ? Colors.grey : const Color(0xFF3182F6),
+                color: _progressVisibility
+                    ? Colors.grey
+                    : const Color(0xFF3182F6),
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -117,9 +126,7 @@ class _VideoTrimWidgetState extends State<VideoTrimWidget> {
       ),
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF3182F6),
-              ),
+              child: CircularProgressIndicator(color: Color(0xFF3182F6)),
             )
           : Column(
               children: [
@@ -150,11 +157,11 @@ class _VideoTrimWidgetState extends State<VideoTrimWidget> {
                             child: Center(
                               child: GestureDetector(
                                 onTap: () async {
-                                  bool playbackState =
-                                      await _trimmer.videoPlaybackControl(
-                                    startValue: _startValue,
-                                    endValue: _endValue,
-                                  );
+                                  bool playbackState = await _trimmer
+                                      .videoPlaybackControl(
+                                        startValue: _startValue,
+                                        endValue: _endValue,
+                                      );
                                   setState(() => _isPlaying = playbackState);
                                 },
                                 child: Container(
@@ -232,7 +239,8 @@ class _VideoTrimWidgetState extends State<VideoTrimWidget> {
                                   const SizedBox(height: 2),
                                   Text(
                                     _formatFileSize(
-                                        File(widget.filePath).lengthSync()),
+                                      File(widget.filePath).lengthSync(),
+                                    ),
                                     style: const TextStyle(
                                       color: Color(0xFF8B95A1),
                                       fontSize: 12,

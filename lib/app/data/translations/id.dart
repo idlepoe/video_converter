@@ -61,6 +61,21 @@ const Map<String, String> idTranslations = {
   'rotate_video_error': 'Terjadi kesalahan saat memutar video: @error',
   'rotate_video_file_not_created': 'File yang diputar tidak dibuat.',
   'rotate_video_rotate_angle': '@angle°',
+  'rotate_90_degrees': '90°',
+  'rotate_180_degrees': '180°',
+  'rotate_270_degrees': '270°',
+  'rotate_video_unsupported_angle': 'Sudut rotasi tidak didukung: @angle',
+  'rotate_video_ffmpeg_error': 'Eksekusi FFmpeg gagal: @error',
+  'rotate_video_file_size_calculating': 'Menghitung ukuran file...',
+  'rotate_video_thumbnail_warning_title': 'Pemberitahuan Penting',
+
+  // Format Descriptions
+  'format_webp_description': 'WebP animasi → diperlakukan sebagai video',
+  'format_mp4_description': 'H.264/H.265, kombinasi audio AAC/MP3/Opus',
+  'format_mkv_description': 'H.264/H.265/VP9, Opus/Vorbis/MP3 dll.',
+  'format_avi_description': 'MPEG-4 Part 2, MP3, dll.',
+  'format_flv_description': 'H.264 + MP3/AAC',
+  'format_mov_description': 'QuickTime, H.264, AAC, MP3 dll.',
 
   // Loading & Conversion
   'converting': 'Mengkonversi...',

@@ -56,6 +56,21 @@ const Map<String, String> jaTranslations = {
   'rotate_video_error': 'ビデオの回転中にエラーが発生しました: @error',
   'rotate_video_file_not_created': '回転されたファイルが作成されませんでした。',
   'rotate_video_rotate_angle': '@angle°',
+  'rotate_90_degrees': '90°',
+  'rotate_180_degrees': '180°',
+  'rotate_270_degrees': '270°',
+  'rotate_video_unsupported_angle': 'サポートされていない回転角度: @angle',
+  'rotate_video_ffmpeg_error': 'FFmpeg実行失敗: @error',
+  'rotate_video_file_size_calculating': 'ファイルサイズを計算中...',
+  'rotate_video_thumbnail_warning_title': '重要な注意事項',
+
+  // Format Descriptions
+  'format_webp_description': 'アニメーションWebP → 動画として扱う',
+  'format_mp4_description': 'H.264/H.265、AAC/MP3/Opusオーディオ組み合わせ',
+  'format_mkv_description': 'H.264/H.265/VP9、Opus/Vorbis/MP3など',
+  'format_avi_description': 'MPEG-4 Part 2、MP3など',
+  'format_flv_description': 'H.264 + MP3/AAC',
+  'format_mov_description': 'QuickTime、H.264、AAC、MP3など',
 
   // Loading & Conversion
   'converting': '変換中...',

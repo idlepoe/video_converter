@@ -61,6 +61,21 @@ const Map<String, String> hiTranslations = {
   'rotate_video_error': 'वीडियो रोटेट करते समय त्रुटि हुई: @error',
   'rotate_video_file_not_created': 'रोटेटेड फ़ाइल नहीं बनाई गई।',
   'rotate_video_rotate_angle': '@angle°',
+  'rotate_90_degrees': '90°',
+  'rotate_180_degrees': '180°',
+  'rotate_270_degrees': '270°',
+  'rotate_video_unsupported_angle': 'असमर्थित रोटेशन कोण: @angle',
+  'rotate_video_ffmpeg_error': 'FFmpeg निष्पादन विफल: @error',
+  'rotate_video_file_size_calculating': 'फ़ाइल आकार की गणना...',
+  'rotate_video_thumbnail_warning_title': 'महत्वपूर्ण सूचना',
+
+  // Format Descriptions
+  'format_webp_description': 'एनिमेटेड WebP → वीडियो के रूप में माना जाता है',
+  'format_mp4_description': 'H.264/H.265, AAC/MP3/Opus ऑडियो संयोजन',
+  'format_mkv_description': 'H.264/H.265/VP9, Opus/Vorbis/MP3 आदि',
+  'format_avi_description': 'MPEG-4 Part 2, MP3, आदि',
+  'format_flv_description': 'H.264 + MP3/AAC',
+  'format_mov_description': 'QuickTime, H.264, AAC, MP3 आदि',
 
   // Loading & Conversion
   'converting': 'कन्वर्ट कर रहे हैं...',

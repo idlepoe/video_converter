@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "837924265185",
+    "project_id": "video-converter-5f318",
+    "storage_bucket": "video-converter-5f318.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:837924265185:android:b3561f2a6e8b3de4a5aba0",
+        "android_client_info": {
+          "package_name": "com.jylee.video_converter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKbZDAjWx9nmeE4SBwM2IC2-pcvhiQ6fY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

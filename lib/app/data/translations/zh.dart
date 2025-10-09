@@ -56,6 +56,21 @@ const Map<String, String> zhTranslations = {
   'rotate_video_error': '旋转视频时发生错误: @error',
   'rotate_video_file_not_created': '未创建旋转文件。',
   'rotate_video_rotate_angle': '@angle°',
+  'rotate_90_degrees': '90°',
+  'rotate_180_degrees': '180°',
+  'rotate_270_degrees': '270°',
+  'rotate_video_unsupported_angle': '不支持的旋转角度: @angle',
+  'rotate_video_ffmpeg_error': 'FFmpeg执行失败: @error',
+  'rotate_video_file_size_calculating': '计算文件大小中...',
+  'rotate_video_thumbnail_warning_title': '重要通知',
+
+  // Format Descriptions
+  'format_webp_description': '动画WebP → 作为视频处理',
+  'format_mp4_description': 'H.264/H.265，AAC/MP3/Opus音频组合',
+  'format_mkv_description': 'H.264/H.265/VP9，Opus/Vorbis/MP3等',
+  'format_avi_description': 'MPEG-4 Part 2，MP3等',
+  'format_flv_description': 'H.264 + MP3/AAC',
+  'format_mov_description': 'QuickTime，H.264，AAC，MP3等',
 
   // Loading & Conversion
   'converting': '转换中...',

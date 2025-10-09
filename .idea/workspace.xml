@@ -5,8 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b3acd73c-1a96-499b-b264-025b326fac26" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/lib/app/modules/select_video/controllers/select_video_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/select_video/controllers/select_video_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/data/translations/en.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/data/translations/en.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/data/translations/es.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/data/translations/es.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/data/translations/hi.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/data/translations/hi.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/data/translations/id.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/data/translations/id.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/data/translations/ja.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/data/translations/ja.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/data/translations/ko.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/data/translations/ko.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/data/translations/ru.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/data/translations/ru.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/data/translations/zh.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/data/translations/zh.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/select_video/dialogs/convert_options_dialog.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/select_video/dialogs/convert_options_dialog.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/select_video/widgets/action_buttons_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/select_video/widgets/action_buttons_widget.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/select_video/widgets/video_trim_widget.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/select_video/widgets/video_trim_widget.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/web/manifest.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

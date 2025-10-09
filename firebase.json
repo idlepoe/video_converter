@@ -1,0 +1,30 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "video-converter-5f318",
+          "appId": "1:837924265185:android:b3561f2a6e8b3de4a5aba0",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "video-converter-5f318",
+          "configurations": {
+            "android": "1:837924265185:android:b3561f2a6e8b3de4a5aba0",
+            "web": "1:837924265185:web:969abab11b163855a5aba0"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
