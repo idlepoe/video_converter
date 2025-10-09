@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:video_converter/app/routes/app_pages.dart';
 import 'package:video_player/video_player.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../video_rotate/video_rotate_screen.dart';
-import '../../video_trim/video_trim_screen.dart';
+import '../widgets/video_rotate_screen.dart';
+import '../widgets/video_trim_screen.dart';
+import '../dialogs/convert_options_dialog.dart';
 
 class SelectVideoController extends GetxController {
   final _picker = ImagePicker();
@@ -37,28 +40,15 @@ class SelectVideoController extends GetxController {
   Future<void> _initVideoPlayer(XFile file) async {
     try {
       videoPlayerController.value?.dispose();
-      videoPlayerController.value = VideoPlayerController.file(File(file.path));
-      await videoPlayerController.value!.initialize();
-      isVideoSelected.value = true;
-      _getVideoInfo(file);
-
-      // 비디오 크기와 길이 정보 설정
-      final size = videoPlayerController.value!.value.size;
-      videoWidth.value = size.width.toInt();
-      videoHeight.value = size.height.toInt();
-      videoDuration.value = videoPlayerController.value!.value.duration;
+      final controller = VideoPlayerController.file(File(file.path));
+      await controller.initialize();
+      videoPlayerController.value = controller;
+      videoDuration.value = controller.value.duration;
+      videoWidth.value = controller.value.size.width.toInt();
+      videoHeight.value = controller.value.size.height.toInt();
     } catch (e) {
-      Get.snackbar('Error', 'Failed to initialize video player: $e');
+      // 비디오 플레이어 초기화 오류 처리
     }
-  }
-
-  void _getVideoInfo(XFile file) {
-    final fileSize = File(file.path).lengthSync();
-    videoInfo.value = {
-      'fileName': file.name,
-      'filePath': file.path,
-      'fileSize': fileSize,
-    };
   }
 
   void selectOtherVideo() {
@@ -207,6 +197,52 @@ class SelectVideoController extends GetxController {
     if (videoFile.value != null) {
       // 비디오 변환 로직 구현
       Get.snackbar('Success', 'Video conversion started!');
+    }
+  }
+
+  void showConvertDialog(BuildContext context) async {
+    final originalWidth = videoWidth.value ?? 0;
+    final originalHeight = videoHeight.value ?? 0;
+    final videoDurationSeconds = videoDuration.value?.inSeconds ?? 0;
+    final videoFilePath = videoFile.value!.path;
+
+    // 저장된 설정 불러오기
+    final savedSettings = await loadConvertSettings();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return ConvertOptionsDialog(
+          originalWidth: originalWidth,
+          originalHeight: originalHeight,
+          videoDurationSeconds: videoDurationSeconds,
+          videoFilePath: videoFilePath,
+          savedSettings: savedSettings,
+          onConvert: (options) async {
+            await handleConvert(options);
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> handleConvert(Map<String, dynamic> options) async {
+    try {
+      // 변환 설정 저장
+      await saveConvertSettings(
+        selectedResolution: options['selectedResolution'],
+        fps: options['fps'],
+        quality: options['quality'],
+        format: options['format'],
+        speed: options['speed'],
+      );
+
+      // LoadingView로 이동
+      Get.toNamed(Routes.LOADING);
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to start conversion: $e');
     }
   }
 }

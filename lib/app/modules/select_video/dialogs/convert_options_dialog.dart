@@ -1,10 +1,23 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import '../controllers/select_video_controller.dart';
 
 class ConvertOptionsDialog extends StatefulWidget {
-  final SelectVideoController controller;
+  final int originalWidth;
+  final int originalHeight;
+  final int videoDurationSeconds;
+  final String videoFilePath;
+  final Map<String, dynamic> savedSettings;
+  final Function(Map<String, dynamic>) onConvert;
 
-  const ConvertOptionsDialog({super.key, required this.controller});
+  const ConvertOptionsDialog({
+    super.key,
+    required this.originalWidth,
+    required this.originalHeight,
+    required this.videoDurationSeconds,
+    required this.videoFilePath,
+    required this.savedSettings,
+    required this.onConvert,
+  });
 
   @override
   State<ConvertOptionsDialog> createState() => _ConvertOptionsDialogState();
@@ -24,13 +37,12 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
   }
 
   Future<void> _loadSettings() async {
-    final settings = await widget.controller.loadConvertSettings();
     setState(() {
-      selectedResolution = settings['selectedResolution'];
-      fps = settings['fps'];
-      quality = settings['quality'];
-      format = settings['format'];
-      speed = settings['speed'];
+      selectedResolution = widget.savedSettings['selectedResolution'];
+      fps = widget.savedSettings['fps'];
+      quality = widget.savedSettings['quality'];
+      format = widget.savedSettings['format'];
+      speed = widget.savedSettings['speed'];
     });
   }
 
@@ -119,9 +131,8 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
                     height: 48,
                     child: ElevatedButton(
                       onPressed: () async {
+                        Navigator.pop(context); // bottomSheet 먼저 닫기
                         await _saveSettings();
-                        Navigator.pop(context);
-                        widget.controller.convertVideo();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0064FF),
@@ -151,21 +162,20 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
   }
 
   Future<void> _saveSettings() async {
-    await widget.controller.saveConvertSettings(
-      selectedResolution: selectedResolution,
-      fps: fps,
-      quality: quality,
-      format: format,
-      speed: speed,
-    );
+    // 변환 옵션을 onConvert 콜백으로 전달
+    final options = {
+      'selectedResolution': selectedResolution,
+      'fps': fps,
+      'quality': quality,
+      'format': format,
+      'speed': speed,
+    };
+    await widget.onConvert(options);
   }
 
   Widget _buildResolutionOptions() {
-    final videoController = widget.controller.videoPlayerController.value;
-    if (videoController == null) return const SizedBox.shrink();
-
-    final originalWidth = videoController.value.size.width.toInt();
-    final originalHeight = videoController.value.size.height.toInt();
+    final originalWidth = widget.originalWidth;
+    final originalHeight = widget.originalHeight;
     final aspectRatio = originalWidth / originalHeight;
 
     final resolutions = <Map<String, dynamic>>[];
@@ -340,11 +350,13 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
   }
 
   String _getFileSizeString() {
-    if (widget.controller.videoInfo.value != null) {
-      final fileSize = widget.controller.videoInfo.value!['fileSize'] as int;
+    try {
+      final file = File(widget.videoFilePath);
+      final fileSize = file.lengthSync();
       final sizeInMB = fileSize / (1024 * 1024);
       return '${sizeInMB.toStringAsFixed(2)} MB';
+    } catch (e) {
+      return '0.00 MB';
     }
-    return '0.00 MB';
   }
 }

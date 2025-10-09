@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/select_video_controller.dart';
-import '../dialogs/convert_options_dialog.dart';
 
 class ActionButtonsWidget extends GetView<SelectVideoController> {
   const ActionButtonsWidget({super.key});
@@ -107,7 +106,7 @@ class ActionButtonsWidget extends GetView<SelectVideoController> {
             width: double.infinity,
             height: 48,
             child: ElevatedButton(
-              onPressed: () => _showConvertOptionsModal(context),
+              onPressed: () => controller.showConvertDialog(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0064FF),
                 foregroundColor: Colors.white,
@@ -124,15 +123,6 @@ class ActionButtonsWidget extends GetView<SelectVideoController> {
           ),
         ],
       ),
-    );
-  }
-
-  void _showConvertOptionsModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => ConvertOptionsDialog(controller: controller),
     );
   }
 }

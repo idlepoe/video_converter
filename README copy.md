@@ -1,15 +1,29 @@
-  Future<void> pickVideo() async {
-    try {
-      final XFile? file = await _picker.pickVideo(source: ImageSource.gallery);
-      if (file != null) {
-        videoFile.value = file;
-        originalVideoFile.value = file; // 원본 파일 저장
-        isTrimmed.value = false; // Trim 상태 초기화
-        await _initVideoPlayer(file);
-      }
-    } catch (e) {
-      // CommonSnackBar.error(
-      //     'error'.tr, 'An error occurred while selecting the video.'.tr);
-    }
-  }
+  void _showConvertDialog(BuildContext context) async {
+    final originalWidth = controller.videoWidth.value ?? 0;
+    final originalHeight = controller.videoHeight.value ?? 0;
+    final videoDurationSeconds = controller.videoDuration.value?.inSeconds ?? 0;
+    final videoFilePath = controller.videoFile.value!.path;
 
+    // 저장된 설정 불러오기
+    final savedSettings = await controller.loadConvertSettings();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Obx(() => ConvertOptionsDialog(
+              originalWidth: originalWidth,
+              originalHeight: originalHeight,
+              videoDurationSeconds: videoDurationSeconds,
+              videoFilePath: videoFilePath,
+              savedSettings: savedSettings,
+              isUploading: controller.isUploading.value,
+              uploadPercent: controller.uploadPercent.value,
+              onConvert: (options) async {
+                controller.uploadAndRequestConvert(options);
+              },
+            ));
+      },
+    );
+  }
