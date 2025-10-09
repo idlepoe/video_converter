@@ -8,11 +8,15 @@ class LoadingView extends GetView<LoadingController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FA),
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.black),
+          onPressed: () => Get.back(),
+        ),
         title: const Text(
-          'Converting Video',
-          style: TextStyle(fontWeight: FontWeight.w600),
+          'Converting...',
+          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -20,83 +24,167 @@ class LoadingView extends GetView<LoadingController> {
       ),
       body: Obx(
         () => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // 로딩 아이콘
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0064FF).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(40),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // 원형 프로그레스 인디케이터
+                SizedBox(
+                  width: 120,
+                  height: 120,
+                  child: Stack(
+                    children: [
+                      // 배경 원
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.grey[300]!,
+                            width: 8,
+                          ),
+                        ),
+                      ),
+                      // 진행률 원
+                      SizedBox(
+                        width: 120,
+                        height: 120,
+                        child: CircularProgressIndicator(
+                          value: controller.progress.value,
+                          strokeWidth: 8,
+                          backgroundColor: Colors.transparent,
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Color(0xFF0064FF),
+                          ),
+                        ),
+                      ),
+                      // 중앙 퍼센트 텍스트
+                      Center(
+                        child: Text(
+                          '${(controller.progress.value * 100).toInt()}%',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                child: const Icon(
-                  Icons.video_file,
-                  size: 40,
-                  color: Color(0xFF0064FF),
-                ),
-              ),
-              const SizedBox(height: 32),
+                const SizedBox(height: 32),
 
-              // 로딩 텍스트
-              const Text(
-                'Converting your video...',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                // Converting... 제목
+                const Text(
+                  'Converting...',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Obx(
-                () => Text(
-                  controller.statusMessage.value,
-                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                const SizedBox(height: 16),
+
+                // 설명 텍스트
+                Text(
+                  'The progress bar is an estimate. Actual conversion speed may vary.',
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
-              ),
-              const SizedBox(height: 48),
+                const SizedBox(height: 32),
 
-              // 진행률 바
-              Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                child: Column(
-                  children: [
-                    // 진행률 텍스트
-                    Text(
-                      '${(controller.progress.value * 100).toInt()}%',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF0064FF),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // 진행률 바
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        value: controller.progress.value,
-                        backgroundColor: Colors.grey[300],
-                        valueColor: const AlwaysStoppedAnimation<Color>(
-                          Color(0xFF0064FF),
+                // 작업 중 메시지 박스
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE3F2FD),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF0064FF),
+                          shape: BoxShape.circle,
                         ),
-                        minHeight: 8,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Still working hard on your video!',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF0064FF),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Text('🚀', style: TextStyle(fontSize: 16)),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 32),
+                const SizedBox(height: 32),
 
-              // 로딩 인디케이터
-              if (controller.isLoading.value)
-                const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0064FF)),
+                // 알림 설정 체크박스
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey[200]!),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: true,
+                            onChanged: (value) {
+                              // 체크박스 상태 변경 로직
+                            },
+                            activeColor: const Color(0xFF0064FF),
+                          ),
+                          const Text(
+                            'Get conversion notification',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Feel free to step out! We\'ll notify you when the conversion is done!',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF0064FF),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
-            ],
+                const SizedBox(height: 24),
+
+                // 상태 메시지
+                Obx(
+                  () => Text(
+                    controller.statusMessage.value,
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

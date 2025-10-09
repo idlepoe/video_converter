@@ -137,6 +137,18 @@ class LoadingController extends GetxController {
 
               if (success == true) {
                 print('Gallery Save: SUCCESS - WebP image saved to gallery');
+
+                // 갤러리 저장 성공 시 원본 파일 삭제
+                try {
+                  final originalFile = File(videoFile.path);
+                  if (originalFile.existsSync()) {
+                    await originalFile.delete();
+                    print('Gallery Save: Original file deleted successfully');
+                  }
+                } catch (e) {
+                  print('Gallery Save: Failed to delete original file: $e');
+                }
+
                 statusMessage.value =
                     'Conversion completed and saved to gallery!';
                 progress.value = 1.0;
