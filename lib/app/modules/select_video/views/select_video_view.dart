@@ -15,9 +15,9 @@ class SelectVideoView extends GetView<SelectVideoController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8FA),
       appBar: AppBar(
-        title: const Text(
-          'Video Converter',
-          style: TextStyle(fontWeight: FontWeight.w600),
+        title: Text(
+          'video_converter'.tr,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,

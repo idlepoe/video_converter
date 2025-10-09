@@ -15,7 +15,7 @@ class LoadingController extends GetxController {
   final count = 0.obs;
   final isLoading = true.obs;
   final progress = 0.0.obs;
-  final statusMessage = 'Preparing conversion...'.obs;
+  final statusMessage = 'preparing_conversion'.tr.obs;
   final outputPath = Rxn<String>();
 
   @override
@@ -41,12 +41,12 @@ class LoadingController extends GetxController {
       final videoFile = selectVideoController.videoFile.value;
 
       if (videoFile == null) {
-        statusMessage.value = 'No video file selected';
+        statusMessage.value = 'no_video_selected'.tr;
         isLoading.value = false;
         return;
       }
 
-      statusMessage.value = 'Starting conversion...';
+      statusMessage.value = 'starting_conversion'.tr;
 
       // 저장된 변환 설정 가져오기
       final savedSettings = await selectVideoController.loadConvertSettings();
@@ -66,8 +66,11 @@ class LoadingController extends GetxController {
       final outputFile = File('${tempDir.path}/$outputFileName');
       outputPath.value = outputFile.path;
 
-      statusMessage.value =
-          'Converting to $selectedFormat (Quality: ${quality.toInt()}%, FPS: ${fps.toInt()})...';
+      statusMessage.value = 'converting_to_format'.trParams({
+        'format': selectedFormat,
+        'quality': quality.toInt().toString(),
+        'fps': fps.toInt().toString(),
+      });
 
       // 원본 비디오 정보 가져오기
       final videoWidth = selectVideoController.videoWidth.value ?? 0;
@@ -140,7 +143,7 @@ class LoadingController extends GetxController {
           // 변환 완료 시 호출
           final returnCode = await session.getReturnCode();
           if (ReturnCode.isSuccess(returnCode)) {
-            statusMessage.value = 'Saving to gallery...';
+            statusMessage.value = 'saving_to_gallery'.tr;
             print(
               'Gallery Save: Starting to save $selectedFormat to gallery...',
             );
@@ -175,8 +178,7 @@ class LoadingController extends GetxController {
                   print('Gallery Save: Failed to delete original file: $e');
                 }
 
-                statusMessage.value =
-                    'Conversion completed and saved to gallery!';
+                statusMessage.value = 'conversion_completed_saved'.tr;
                 progress.value = 1.0;
                 isLoading.value = false;
 
@@ -197,8 +199,7 @@ class LoadingController extends GetxController {
                 );
               } else {
                 print('Gallery Save: FAILED - GallerySaver returned false');
-                statusMessage.value =
-                    'Conversion completed but failed to save to gallery';
+                statusMessage.value = 'conversion_completed_not_saved'.tr;
                 progress.value = 1.0;
                 isLoading.value = false;
 
@@ -214,8 +215,8 @@ class LoadingController extends GetxController {
               }
             } catch (e) {
               print('Gallery Save: ERROR - Exception occurred: $e');
-              statusMessage.value =
-                  'Conversion completed but gallery save failed: $e';
+              statusMessage.value = 'conversion_completed_gallery_failed'
+                  .trParams({'error': e.toString()});
               progress.value = 1.0;
               isLoading.value = false;
 
@@ -230,7 +231,7 @@ class LoadingController extends GetxController {
               );
             }
           } else {
-            statusMessage.value = 'Conversion failed';
+            statusMessage.value = 'conversion_failed'.tr;
             isLoading.value = false;
             Get.snackbar('Error', 'Video conversion failed');
           }
@@ -249,7 +250,9 @@ class LoadingController extends GetxController {
         },
       );
     } catch (e) {
-      statusMessage.value = 'Conversion error: $e';
+      statusMessage.value = 'conversion_error'.trParams({
+        'error': e.toString(),
+      });
       isLoading.value = false;
 
       // 변환 실패 알림 표시

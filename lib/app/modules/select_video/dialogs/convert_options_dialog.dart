@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ConvertOptionsDialog extends StatefulWidget {
   final int originalWidth;
@@ -66,9 +67,9 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Title
-              const Text(
-                'Convert Options',
-                style: TextStyle(
+              Text(
+                'convert_options'.tr,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
@@ -77,9 +78,9 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
               const SizedBox(height: 24),
 
               // Format Selection Section
-              const Text(
-                'Output Format',
-                style: TextStyle(
+              Text(
+                'output_format'.tr,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
@@ -90,9 +91,9 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
               const SizedBox(height: 24),
 
               // Resolution Section
-              const Text(
-                'Resolution',
-                style: TextStyle(
+              Text(
+                'resolution'.tr,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
@@ -108,7 +109,7 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
 
               // File Size Info
               Text(
-                'Original File Size: ${_getFileSizeString()}',
+                'original_file_size'.trParams({'size': _getFileSizeString()}),
                 style: const TextStyle(fontSize: 14, color: Colors.grey),
               ),
               const SizedBox(height: 24),
@@ -131,9 +132,9 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(
+                        child: Text(
+                          'cancel'.tr,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -158,9 +159,9 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
-                          'Convert',
-                          style: TextStyle(
+                        child: Text(
+                          'convert'.tr,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                           ),
@@ -354,13 +355,13 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
   Widget _buildSliderSection(BuildContext context) {
     return Column(
       children: [
-        _buildSlider(context, 'FPS', fps, 1, 60, (value) {
+        _buildSlider(context, 'fps'.tr, fps, 1, 60, (value) {
           setState(() {
             fps = value;
           });
         }, defaultValue: 30.0),
         const SizedBox(height: 16),
-        _buildSlider(context, 'Quality', quality, 1, 100, (value) {
+        _buildSlider(context, 'quality'.tr, quality, 1, 100, (value) {
           setState(() {
             quality = value;
           });
@@ -368,7 +369,7 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
         const SizedBox(height: 16),
         _buildSlider(
           context,
-          'Playback Speed',
+          'playback_speed'.tr,
           speed,
           0.5,
           2.0,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class EmptyVideoWidget extends StatelessWidget {
   final VoidCallback onPickVideo;
@@ -35,10 +36,10 @@ class EmptyVideoWidget extends StatelessWidget {
                         size: 48,
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        'Select Video File',
+                      Text(
+                        'select_video_file'.tr,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue,
@@ -46,7 +47,7 @@ class EmptyVideoWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Tap to select a video',
+                        'tap_to_select_video'.tr,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.blue.withOpacity(0.7),
@@ -71,7 +72,7 @@ class EmptyVideoWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.blue.withOpacity(0.2)),
                 ),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -79,8 +80,8 @@ class EmptyVideoWidget extends StatelessWidget {
                         Icon(Icons.security, color: Colors.blue, size: 16),
                         SizedBox(width: 8),
                         Text(
-                          'Privacy Protection',
-                          style: TextStyle(
+                          'privacy_protection'.tr,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: Colors.blue,
@@ -90,7 +91,7 @@ class EmptyVideoWidget extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Your video files are processed locally and never uploaded to external servers.',
+                      'privacy_protection_message'.tr,
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.blue,
@@ -114,9 +115,12 @@ class EmptyVideoWidget extends StatelessWidget {
                     foregroundColor: Colors.white,
                     elevation: 0,
                   ),
-                  child: const Text(
-                    'Select Video',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  child: Text(
+                    'select_video'.tr,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

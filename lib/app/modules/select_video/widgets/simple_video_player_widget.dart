@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:get/get.dart';
 import 'dart:io';
 
 class SimpleVideoPlayerWidget extends StatefulWidget {
@@ -186,15 +187,18 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('File Name: ${widget.fileName}'),
+                Text('file_name_label'.tr + ' ${widget.fileName}'),
                 Text(
-                  'Resolution: ${widget.videoWidth ?? 0} x ${widget.videoHeight ?? 0}',
+                  'video_resolution_label'.tr +
+                      ' ${widget.videoWidth ?? 0} x ${widget.videoHeight ?? 0}',
                 ),
                 Text(
-                  'Duration: ${_formatDuration(widget.videoDuration ?? Duration.zero)}',
+                  'video_duration_label'.tr +
+                      ' ${_formatDuration(widget.videoDuration ?? Duration.zero)}',
                 ),
                 Text(
-                  'File Size: ${_formatFileSize(File(widget.filePath).lengthSync())}',
+                  'file_size_label'.tr +
+                      ' ${_formatFileSize(File(widget.filePath).lengthSync())}',
                 ),
                 const SizedBox(height: 12),
 
@@ -218,8 +222,8 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: const Text(
-                          'Files are processed locally and can be safely deleted after conversion.',
+                        child: Text(
+                          'file_deletion_info'.tr,
                           style: TextStyle(
                             fontSize: 11,
                             color: Color(0xFF6C757D),

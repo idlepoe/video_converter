@@ -12,9 +12,9 @@ class ConvertResultView extends GetView<ConvertResultController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8FA),
       appBar: AppBar(
-        title: const Text(
-          'Conversion Complete',
-          style: TextStyle(fontWeight: FontWeight.w600),
+        title: Text(
+          'conversion_complete'.tr,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -26,7 +26,7 @@ class ConvertResultView extends GetView<ConvertResultController> {
       ),
       body: Obx(() {
         if (controller.outputPath.value == null) {
-          return const Center(child: Text('No converted file found'));
+          return Center(child: Text('no_converted_file'.tr));
         }
 
         return SingleChildScrollView(
@@ -56,9 +56,9 @@ class ConvertResultView extends GetView<ConvertResultController> {
                       size: 48,
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Conversion Complete!',
-                      style: TextStyle(
+                    Text(
+                      'conversion_complete_title'.tr,
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
@@ -67,8 +67,8 @@ class ConvertResultView extends GetView<ConvertResultController> {
                     const SizedBox(height: 8),
                     Text(
                       controller.savedToGallery.value
-                          ? 'Video saved to gallery'
-                          : 'File ready for download',
+                          ? 'video_saved_to_gallery'.tr
+                          : 'file_ready_for_download'.tr,
                       style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                     ),
                   ],
@@ -129,7 +129,8 @@ class ConvertResultView extends GetView<ConvertResultController> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'File Name: ${controller.fileName.value ?? 'Unknown'}',
+                                  'file_name_label'.tr +
+                                      ' ${controller.fileName.value ?? 'unknown'.tr}',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
@@ -137,16 +138,17 @@ class ConvertResultView extends GetView<ConvertResultController> {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'File Size: ${controller.formattedFileSize}',
+                                  'file_size_label'.tr +
+                                      ' ${controller.formattedFileSize}',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                const Text(
-                                  'Format: WebP',
-                                  style: TextStyle(
+                                Text(
+                                  'format_webp'.tr,
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -179,7 +181,7 @@ class ConvertResultView extends GetView<ConvertResultController> {
                           videoController:
                               controller.videoPlayerController.value!,
                           maxVideoHeight: 300,
-                          fileName: controller.fileName.value ?? 'Unknown',
+                          fileName: controller.fileName.value ?? 'unknown'.tr,
                           videoWidth: controller.videoWidth.value,
                           videoHeight: controller.videoHeight.value,
                           videoDuration: controller.videoDuration.value,
@@ -242,8 +244,8 @@ class ConvertResultView extends GetView<ConvertResultController> {
                         children: [
                           Text(
                             controller.savedToGallery.value
-                                ? 'Saved to Gallery'
-                                : 'Not saved to Gallery',
+                                ? 'saved_to_gallery'.tr
+                                : 'not_saved_to_gallery'.tr,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -255,8 +257,8 @@ class ConvertResultView extends GetView<ConvertResultController> {
                           const SizedBox(height: 4),
                           Text(
                             controller.savedToGallery.value
-                                ? 'Your converted video is now available in your gallery'
-                                : 'Failed to save to gallery. Check file permissions.',
+                                ? 'gallery_save_success_message'.tr
+                                : 'gallery_save_failed_message'.tr,
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -280,7 +282,7 @@ class ConvertResultView extends GetView<ConvertResultController> {
                         Get.offAllNamed('/select-video');
                       },
                       icon: const Icon(Icons.video_library),
-                      label: const Text('Convert Another'),
+                      label: Text('convert_another'.tr),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF6B7280),
                         foregroundColor: Colors.white,
@@ -296,7 +298,7 @@ class ConvertResultView extends GetView<ConvertResultController> {
                     child: ElevatedButton.icon(
                       onPressed: () => controller.openGallery(),
                       icon: const Icon(Icons.photo_library),
-                      label: const Text('View in Gallery'),
+                      label: Text('view_in_gallery'.tr),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0064FF),
                         foregroundColor: Colors.white,

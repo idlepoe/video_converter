@@ -38,9 +38,12 @@ class ActionButtonsWidget extends GetView<SelectVideoController> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                'Other Video',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              child: Text(
+                'other_video'.tr,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -58,9 +61,12 @@ class ActionButtonsWidget extends GetView<SelectVideoController> {
                 color: Colors.white,
                 size: 18,
               ),
-              label: const Text(
-                'Video Rotate',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              label: Text(
+                'video_rotate'.tr,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF8B5CF6),
@@ -85,9 +91,12 @@ class ActionButtonsWidget extends GetView<SelectVideoController> {
                 color: Colors.white,
                 size: 18,
               ),
-              label: const Text(
-                'Video Trim',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+              label: Text(
+                'video_trim'.tr,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF10B981),
@@ -115,9 +124,12 @@ class ActionButtonsWidget extends GetView<SelectVideoController> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                'Convert',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              child: Text(
+                'convert'.tr,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),

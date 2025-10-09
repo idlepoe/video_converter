@@ -121,7 +121,7 @@ class ConvertResultController extends GetxController {
     if (fileSize.value != null) {
       return _formatFileSize(fileSize.value!);
     }
-    return 'Unknown';
+    return 'unknown'.tr;
   }
 
   Future<void> openGallery() async {
@@ -179,7 +179,7 @@ class ConvertResultController extends GetxController {
       print('Gallery Intent: Failed to launch gallery - $e');
       Get.snackbar(
         'Info',
-        'Gallery app not found. Please check your gallery manually.',
+        'gallery_app_not_found'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.orange,
         colorText: Colors.white,

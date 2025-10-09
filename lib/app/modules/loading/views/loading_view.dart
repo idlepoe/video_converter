@@ -14,9 +14,12 @@ class LoadingView extends GetView<LoadingController> {
           icon: const Icon(Icons.close, color: Colors.black),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Converting...',
-          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black),
+        title: Text(
+          'converting'.tr,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -77,9 +80,9 @@ class LoadingView extends GetView<LoadingController> {
                 const SizedBox(height: 32),
 
                 // Converting... 제목
-                const Text(
-                  'Converting...',
-                  style: TextStyle(
+                Text(
+                  'converting'.tr,
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
@@ -89,7 +92,7 @@ class LoadingView extends GetView<LoadingController> {
 
                 // 설명 텍스트
                 Text(
-                  'The progress bar is an estimate. Actual conversion speed may vary.',
+                  'progress_estimate'.tr,
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
@@ -117,9 +120,9 @@ class LoadingView extends GetView<LoadingController> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Still working hard on your video!',
-                        style: TextStyle(
+                      Text(
+                        'still_working'.tr,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: Color(0xFF0064FF),
@@ -154,10 +157,10 @@ class LoadingView extends GetView<LoadingController> {
                         size: 20,
                       ),
                       const SizedBox(width: 8),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Please keep the app open for smooth conversion! 🎬',
-                          style: TextStyle(
+                          'keep_app_open'.tr,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: Color(0xFFE65100),

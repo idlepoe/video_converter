@@ -5,6 +5,7 @@ import 'package:video_converter/app/routes/app_pages.dart';
 import 'package:video_player/video_player.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:in_app_update/in_app_update.dart';
 import '../widgets/video_rotate_screen.dart';
 import '../widgets/video_trim_screen.dart';
 import '../dialogs/convert_options_dialog.dart';
@@ -24,6 +25,22 @@ class SelectVideoController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _checkForUpdate();
+  }
+
+  Future<void> _checkForUpdate() async {
+    try {
+      // 업데이트 확인
+      final updateInfo = await InAppUpdate.checkForUpdate();
+
+      if (updateInfo.updateAvailability == UpdateAvailability.updateAvailable) {
+        // 즉시 업데이트 수행
+        await InAppUpdate.performImmediateUpdate();
+      }
+    } catch (e) {
+      // 업데이트 실패 시 로그만 출력 (사용자에게는 알리지 않음)
+      print('In-app update failed: $e');
+    }
   }
 
   @override
