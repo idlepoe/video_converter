@@ -1,19 +1,103 @@
-MP4 (H.264/H.265, AAC/MP3/Opus 등 오디오 조합)
+import 'dart:async';
 
-MKV (H.264/H.265/VP9, Opus/Vorbis/MP3 등)
+import 'package:flutter/material.dart';
+import 'package:in_app_update/in_app_update.dart';
 
-WebM (VP8/VP9 + Vorbis/Opus)
+void main() => runApp(MyApp());
 
-OGG (Theora + Vorbis/Speex/Opus)
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
-3GP / 3GPP (AMR-NB, AMR-WB, H.263/H.264)
+class _MyAppState extends State<MyApp> {
+  AppUpdateInfo? _updateInfo;
 
-AVI (MPEG-4 Part 2, MP3, etc.)
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
-FLV (H.264 + MP3/AAC)
+  bool _flexibleUpdateAvailable = false;
 
-MPEG-TS / PS (MPEG-2, H.264, MP2, MP3, AAC)
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> checkForUpdate() async {
+    InAppUpdate.checkForUpdate().then((info) {
+      setState(() {
+        _updateInfo = info;
+      });
+    }).catchError((e) {
+      showSnack(e.toString());
+    });
+  }
 
-MOV (QuickTime, H.264, AAC, MP3 등)
+  void showSnack(String text) {
+    if (_scaffoldKey.currentContext != null) {
+      ScaffoldMessenger.of(_scaffoldKey.currentContext!)
+          .showSnackBar(SnackBar(content: Text(text)));
+    }
+  }
 
-WebP (애니메이션 WebP → 영상처럼 다룸)
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: const Text('In App Update Example App'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: <Widget>[
+              Center(
+                child: Text('Update info: $_updateInfo'),
+              ),
+              ElevatedButton(
+                child: Text('Check for Update'),
+                onPressed: () => checkForUpdate(),
+              ),
+              ElevatedButton(
+                child: Text('Perform immediate update'),
+                onPressed: _updateInfo?.updateAvailability ==
+                        UpdateAvailability.updateAvailable
+                    ? () {
+                        InAppUpdate.performImmediateUpdate()
+                            .catchError((e) {
+                              showSnack(e.toString());
+                             return AppUpdateResult.inAppUpdateFailed;
+                            });
+                      }
+                    : null,
+              ),
+              ElevatedButton(
+                child: Text('Start flexible update'),
+                onPressed: _updateInfo?.updateAvailability ==
+                        UpdateAvailability.updateAvailable
+                    ? () {
+                        InAppUpdate.startFlexibleUpdate().then((_) {
+                          setState(() {
+                            _flexibleUpdateAvailable = true;
+                          });
+                        }).catchError((e) {
+                          showSnack(e.toString());
+                        });
+                      }
+                    : null,
+              ),
+              ElevatedButton(
+                child: Text('Complete flexible update'),
+                onPressed: !_flexibleUpdateAvailable
+                    ? null
+                    : () {
+                        InAppUpdate.completeFlexibleUpdate().then((_) {
+                          showSnack("Success!");
+                        }).catchError((e) {
+                          showSnack(e.toString());
+                        });
+                      },
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

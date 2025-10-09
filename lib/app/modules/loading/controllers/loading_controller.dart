@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:gallery_saver_plus/gallery_saver.dart';
 import 'package:video_converter/app/routes/app_pages.dart';
 import 'package:video_converter/app/modules/select_video/controllers/select_video_controller.dart';
+import 'package:video_converter/app/services/notification_service.dart';
 
 class LoadingController extends GetxController {
   final count = 0.obs;
@@ -179,6 +180,12 @@ class LoadingController extends GetxController {
                 progress.value = 1.0;
                 isLoading.value = false;
 
+                // 변환 완료 알림 표시
+                await NotificationService.showConversionCompleteNotification(
+                  fileName: outputFile.path.split('/').last,
+                  format: selectedFormat,
+                );
+
                 // 결과 화면으로 이동
                 Get.offNamed(
                   Routes.CONVERT_RESULT,
@@ -244,6 +251,12 @@ class LoadingController extends GetxController {
     } catch (e) {
       statusMessage.value = 'Conversion error: $e';
       isLoading.value = false;
+
+      // 변환 실패 알림 표시
+      await NotificationService.showConversionErrorNotification(
+        errorMessage: e.toString(),
+      );
+
       Get.snackbar('Error', 'Conversion failed: $e');
     }
   }
