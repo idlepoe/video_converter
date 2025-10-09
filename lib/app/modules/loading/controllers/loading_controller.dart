@@ -123,14 +123,20 @@ class LoadingController extends GetxController {
           final returnCode = await session.getReturnCode();
           if (ReturnCode.isSuccess(returnCode)) {
             statusMessage.value = 'Saving to gallery...';
+            print('Gallery Save: Starting to save WebP image to gallery...');
+            print('Gallery Save: Output file path: ${outputFile.path}');
 
             try {
-              // GallerySaver를 사용하여 갤러리에 저장
-              final bool? success = await GallerySaver.saveVideo(
+              // GallerySaver를 사용하여 갤러리에 저장 (WebP는 이미지이므로 saveImage 사용)
+              print('Gallery Save: Calling GallerySaver.saveImage()...');
+              final bool? success = await GallerySaver.saveImage(
                 outputFile.path,
               );
 
+              print('Gallery Save: GallerySaver result: $success');
+
               if (success == true) {
+                print('Gallery Save: SUCCESS - WebP image saved to gallery');
                 statusMessage.value =
                     'Conversion completed and saved to gallery!';
                 progress.value = 1.0;
@@ -146,6 +152,7 @@ class LoadingController extends GetxController {
                   },
                 );
               } else {
+                print('Gallery Save: FAILED - GallerySaver returned false');
                 statusMessage.value =
                     'Conversion completed but failed to save to gallery';
                 progress.value = 1.0;
@@ -162,6 +169,7 @@ class LoadingController extends GetxController {
                 );
               }
             } catch (e) {
+              print('Gallery Save: ERROR - Exception occurred: $e');
               statusMessage.value =
                   'Conversion completed but gallery save failed: $e';
               progress.value = 1.0;

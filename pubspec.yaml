@@ -10,13 +10,14 @@ dependencies:
   cupertino_icons: ^1.0.8
   get: ^4.7.2
   ffmpeg_kit_flutter_new: ^3.2.0
-  file_picker: ^8.0.0+1
-  video_player: ^2.8.2
+  file_picker: ^10.3.3
+  video_player: ^2.10.0
   path_provider: ^2.1.5
   video_trimmer: ^5.0.0
-  image_picker: ^1.0.7
-  shared_preferences: ^2.2.2
+  image_picker: ^1.2.0
+  shared_preferences: ^2.5.3
   gallery_saver_plus: ^3.2.9
+  android_intent_plus: ^6.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,7 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:video_player/video_player.dart';
 import '../controllers/convert_result_controller.dart';
+import '../../select_video/widgets/simple_video_player_widget.dart';
 
 class ConvertResultView extends GetView<ConvertResultController> {
   const ConvertResultView({super.key});
@@ -75,96 +76,141 @@ class ConvertResultView extends GetView<ConvertResultController> {
               ),
               const SizedBox(height: 20),
 
-              // 비디오 플레이어
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
+              // 파일 타입에 따른 표시
+              Obx(() {
+                if (controller.isWebP.value) {
+                  // WebP 이미지 표시
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: controller.isVideoInitialized.value
-                        ? VideoPlayer(controller.videoPlayerController.value!)
-                        : const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Column(
+                        children: [
+                          // 이미지 표시
+                          Container(
+                            height: 300,
+                            width: double.infinity,
+                            color: Colors.black,
+                            child: controller.outputPath.value != null
+                                ? Image.file(
+                                    File(controller.outputPath.value!),
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Center(
+                                        child: Icon(
+                                          Icons.broken_image,
+                                          color: Colors.white,
+                                          size: 64,
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : const Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
+                          // 파일 정보
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'File Name: ${controller.fileName.value ?? 'Unknown'}',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'File Size: ${controller.formattedFileSize}',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Format: WebP',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // 비디오 컨트롤
-              if (controller.isVideoInitialized.value)
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          if (controller
-                              .videoPlayerController
-                              .value!
-                              .value
-                              .isPlaying) {
-                            controller.videoPlayerController.value!.pause();
-                          } else {
-                            controller.videoPlayerController.value!.play();
-                          }
-                        },
-                        icon: Icon(
-                          controller
-                                  .videoPlayerController
-                                  .value!
-                                  .value
-                                  .isPlaying
-                              ? Icons.pause
-                              : Icons.play_arrow,
-                          size: 32,
-                          color: const Color(0xFF0064FF),
+                    ),
+                  );
+                } else {
+                  // 비디오 파일 표시
+                  if (controller.isVideoInitialized.value) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: SimpleVideoPlayerWidget(
+                          videoController:
+                              controller.videoPlayerController.value!,
+                          maxVideoHeight: 300,
+                          fileName: controller.fileName.value ?? 'Unknown',
+                          videoWidth: controller.videoWidth.value,
+                          videoHeight: controller.videoHeight.value,
+                          videoDuration: controller.videoDuration.value,
+                          filePath: controller.outputPath.value!,
                         ),
                       ),
-                      const SizedBox(width: 16),
-                      IconButton(
-                        onPressed: () {
-                          controller.videoPlayerController.value!.seekTo(
-                            Duration.zero,
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.replay,
-                          size: 24,
-                          color: const Color(0xFF0064FF),
-                        ),
+                    );
+                  } else {
+                    return Container(
+                      height: 300,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                      child: const Center(
+                        child: CircularProgressIndicator(color: Colors.white),
+                      ),
+                    );
+                  }
+                }
+              }),
               const SizedBox(height: 20),
 
-              // 파일 정보
+              // 갤러리 저장 상태
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -178,89 +224,46 @@ class ConvertResultView extends GetView<ConvertResultController> {
                     ),
                   ],
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    const Text(
-                      'File Information',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    Icon(
+                      controller.savedToGallery.value
+                          ? Icons.check_circle
+                          : Icons.error_outline,
+                      color: controller.savedToGallery.value
+                          ? Colors.green
+                          : Colors.orange,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            controller.savedToGallery.value
+                                ? 'Saved to Gallery'
+                                : 'Not saved to Gallery',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: controller.savedToGallery.value
+                                  ? Colors.green
+                                  : Colors.orange,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            controller.savedToGallery.value
+                                ? 'Your converted video is now available in your gallery'
+                                : 'Failed to save to gallery. Check file permissions.',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.video_file,
-                          color: Color(0xFF0064FF),
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Format: ',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                        const Text(
-                          'WebP',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.storage,
-                          color: Color(0xFF0064FF),
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'File Size: ',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                        Text(
-                          controller.formattedFileSize,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(
-                          controller.savedToGallery.value
-                              ? Icons.check_circle
-                              : Icons.error_outline,
-                          color: controller.savedToGallery.value
-                              ? Colors.green
-                              : Colors.orange,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          controller.savedToGallery.value
-                              ? 'Saved to Gallery'
-                              : 'Not saved to Gallery',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: controller.savedToGallery.value
-                                ? Colors.green
-                                : Colors.orange,
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),
@@ -291,14 +294,7 @@ class ConvertResultView extends GetView<ConvertResultController> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {
-                        // 갤러리에서 확인
-                        Get.snackbar(
-                          'Success',
-                          'Check your gallery for the converted video',
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
-                      },
+                      onPressed: () => controller.openGallery(),
                       icon: const Icon(Icons.photo_library),
                       label: const Text('View in Gallery'),
                       style: ElevatedButton.styleFrom(
