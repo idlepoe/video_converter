@@ -1,18 +1,18 @@
-# VideoConverter
+# WebpConverter
 
 ## Play Store Information
 
 ### App Name (30 characters max)
-VideoConverter
+WebpConverter
 
 ### Short Description (80 characters max)
-Convert videos with privacy protection. Support 6 formats & 8 languages.
+Convert videos to WebP with privacy protection. Support 6 formats & 8 languages.
 
 ### Long Description (1000 characters max)
-Transform your videos effortlessly with VideoConverter! Convert between WebP, MP4, MKV, AVI, FLV, and MOV formats while keeping your data completely private.
+Transform your videos effortlessly with WebpConverter! Convert between WebP, MP4, MKV, AVI, FLV, and MOV formats while keeping your data completely private.
 
 **Key Features:**
-• Convert videos to 6 popular formats
+• Convert videos to 6 popular formats including WebP
 • Rotate and trim videos with precision
 • Adjust quality, resolution, FPS, and playback speed
 • Complete privacy protection - all processing happens locally

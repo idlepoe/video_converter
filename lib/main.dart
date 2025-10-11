@@ -14,7 +14,7 @@ void main() async {
 
   runApp(
     GetMaterialApp(
-      title: "Application",
+      title: "WebpConverter",
       translations: AppTranslations(),
       locale: Get.deviceLocale,
       fallbackLocale: Locale('en'),

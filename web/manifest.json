@@ -1,11 +1,11 @@
 {
-    "name": "VideoConverter",
-    "short_name": "VideoConverter",
+    "name": "WebpConverter",
+    "short_name": "WebpConverter",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",
     "theme_color": "#FFFFFF",
-    "description": "Convert videos with privacy protection. Support 6 formats & 8 languages.",
+    "description": "Convert videos to WebP and other formats with privacy protection. Support 6 formats & 8 languages.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
