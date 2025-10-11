@@ -98,6 +98,17 @@ const Map<String, String> idTranslations = {
   'conversion_failed': 'Konversi gagal',
   'conversion_error': 'Kesalahan konversi: @error',
 
+  // Error Messages
+  'error_ffmpeg_not_available':
+      'Pemrosesan video tidak tersedia di perangkat ini',
+  'error_rotation_filter_not_supported':
+      'Perangkat ini tidak mendukung filter rotasi video',
+  'error_format_not_supported':
+      'Perangkat ini tidak mendukung format yang dipilih',
+  'error_memory_insufficient': 'Memori tidak cukup untuk konversi video',
+  'error_rotation_general': 'Terjadi kesalahan saat memutar video: @error',
+  'error_conversion_general': 'Terjadi kesalahan selama konversi video: @error',
+
   // Convert Result
   'conversion_complete': 'Konversi Selesai',
   'conversion_complete_title': 'Konversi Selesai!',

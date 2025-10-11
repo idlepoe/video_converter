@@ -69,6 +69,54 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // 컨트롤러가 초기화되지 않았거나 dispose된 경우 처리
+    if (!widget.videoController.value.isInitialized) {
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: widget.maxVideoHeight,
+                child: Container(
+                  color: Colors.black,
+                  child: const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+            // 비디오 정보는 표시
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('file_name_label'.tr + ' ${widget.fileName}'),
+                  Text(
+                    'video_resolution_label'.tr +
+                        ' ${widget.videoWidth ?? 0} x ${widget.videoHeight ?? 0}',
+                  ),
+                  Text(
+                    'video_duration_label'.tr +
+                        ' ${_formatDuration(widget.videoDuration ?? Duration.zero)}',
+                  ),
+                  Text(
+                    'file_size_label'.tr +
+                        ' ${_formatFileSize(File(widget.filePath).lengthSync())}',
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     final duration = widget.videoController.value.duration;
     final position = _isDragging
         ? Duration(milliseconds: (_dragValue * duration.inMilliseconds).toInt())
@@ -86,10 +134,12 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () {
-                  if (widget.videoController.value.isPlaying) {
-                    widget.videoController.pause();
-                  } else {
-                    widget.videoController.play();
+                  if (widget.videoController.value.isInitialized) {
+                    if (widget.videoController.value.isPlaying) {
+                      widget.videoController.pause();
+                    } else {
+                      widget.videoController.play();
+                    }
                   }
                 },
                 child: Stack(
@@ -161,11 +211,13 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
                         });
                       },
                       onChangeEnd: (value) {
-                        final newPosition = Duration(
-                          milliseconds: (value * duration.inMilliseconds)
-                              .toInt(),
-                        );
-                        widget.videoController.seekTo(newPosition);
+                        if (widget.videoController.value.isInitialized) {
+                          final newPosition = Duration(
+                            milliseconds: (value * duration.inMilliseconds)
+                                .toInt(),
+                          );
+                          widget.videoController.seekTo(newPosition);
+                        }
                         setState(() {
                           _isDragging = false;
                         });

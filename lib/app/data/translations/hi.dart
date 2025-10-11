@@ -97,6 +97,15 @@ const Map<String, String> hiTranslations = {
   'conversion_failed': 'कन्वर्ज़न विफल',
   'conversion_error': 'कन्वर्ज़न त्रुटि: @error',
 
+  // Error Messages
+  'error_ffmpeg_not_available': 'इस डिवाइस पर वीडियो प्रोसेसिंग उपलब्ध नहीं है',
+  'error_rotation_filter_not_supported':
+      'यह डिवाइस वीडियो रोटेशन फिल्टर का समर्थन नहीं करता',
+  'error_format_not_supported': 'यह डिवाइस चयनित प्रारूप का समर्थन नहीं करता',
+  'error_memory_insufficient': 'वीडियो रूपांतरण के लिए अपर्याप्त मेमोरी',
+  'error_rotation_general': 'वीडियो घुमाते समय त्रुटि हुई: @error',
+  'error_conversion_general': 'वीडियो रूपांतरण के दौरान त्रुटि हुई: @error',
+
   // Convert Result
   'conversion_complete': 'कन्वर्ज़न पूर्ण',
   'conversion_complete_title': 'कन्वर्ज़न पूर्ण!',

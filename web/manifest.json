@@ -4,7 +4,7 @@
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",
-    "theme_color": "#2196F3",
+    "theme_color": "#FFFFFF",
     "description": "Convert videos with privacy protection. Support 6 formats & 8 languages.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,

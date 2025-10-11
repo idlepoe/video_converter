@@ -88,6 +88,14 @@ const Map<String, String> zhTranslations = {
   'conversion_failed': '转换失败',
   'conversion_error': '转换错误: @error',
 
+  // Error Messages
+  'error_ffmpeg_not_available': '此设备不支持视频处理功能',
+  'error_rotation_filter_not_supported': '此设备不支持视频旋转滤镜',
+  'error_format_not_supported': '此设备不支持所选格式',
+  'error_memory_insufficient': '视频转换内存不足',
+  'error_rotation_general': '视频旋转时发生错误: @error',
+  'error_conversion_general': '视频转换时发生错误: @error',
+
   // Convert Result
   'conversion_complete': '转换完成',
   'conversion_complete_title': '转换完成！',

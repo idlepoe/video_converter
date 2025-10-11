@@ -97,6 +97,18 @@ const Map<String, String> enTranslations = {
   'conversion_failed': 'Conversion failed',
   'conversion_error': 'Conversion error: @error',
 
+  // Error Messages
+  'error_ffmpeg_not_available':
+      'Video processing is not available on this device',
+  'error_rotation_filter_not_supported':
+      'This device does not support video rotation filters',
+  'error_format_not_supported':
+      'This device does not support the selected format',
+  'error_memory_insufficient': 'Insufficient memory for video conversion',
+  'error_rotation_general': 'An error occurred while rotating video: @error',
+  'error_conversion_general':
+      'An error occurred during video conversion: @error',
+
   // Convert Result
   'conversion_complete': 'Conversion Complete',
   'conversion_complete_title': 'Conversion Complete!',

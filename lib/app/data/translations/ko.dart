@@ -90,6 +90,14 @@ const Map<String, String> koTranslations = {
   'conversion_failed': '변환 실패',
   'conversion_error': '변환 오류: @error',
 
+  // Error Messages
+  'error_ffmpeg_not_available': '이 디바이스에서는 비디오 처리 기능을 사용할 수 없습니다',
+  'error_rotation_filter_not_supported': '이 디바이스에서는 비디오 회전 필터를 지원하지 않습니다',
+  'error_format_not_supported': '이 디바이스에서는 선택한 포맷을 지원하지 않습니다',
+  'error_memory_insufficient': '비디오 변환을 위한 메모리가 부족합니다',
+  'error_rotation_general': '비디오 회전 중 오류가 발생했습니다: @error',
+  'error_conversion_general': '비디오 변환 중 오류가 발생했습니다: @error',
+
   // Convert Result
   'conversion_complete': '변환 완료',
   'conversion_complete_title': '변환 완료!',

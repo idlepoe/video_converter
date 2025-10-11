@@ -98,6 +98,16 @@ const Map<String, String> ruTranslations = {
   'conversion_failed': 'Конвертация не удалась',
   'conversion_error': 'Ошибка конвертации: @error',
 
+  // Error Messages
+  'error_ffmpeg_not_available': 'Обработка видео недоступна на этом устройстве',
+  'error_rotation_filter_not_supported':
+      'Это устройство не поддерживает фильтры поворота видео',
+  'error_format_not_supported':
+      'Это устройство не поддерживает выбранный формат',
+  'error_memory_insufficient': 'Недостаточно памяти для конвертации видео',
+  'error_rotation_general': 'Произошла ошибка при повороте видео: @error',
+  'error_conversion_general': 'Произошла ошибка при конвертации видео: @error',
+
   // Convert Result
   'conversion_complete': 'Конвертация Завершена',
   'conversion_complete_title': 'Конвертация Завершена!',

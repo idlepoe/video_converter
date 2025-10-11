@@ -88,6 +88,14 @@ const Map<String, String> jaTranslations = {
   'conversion_failed': '変換に失敗しました',
   'conversion_error': '変換エラー: @error',
 
+  // Error Messages
+  'error_ffmpeg_not_available': 'このデバイスでは動画処理機能を使用できません',
+  'error_rotation_filter_not_supported': 'このデバイスは動画回転フィルターをサポートしていません',
+  'error_format_not_supported': 'このデバイスは選択されたフォーマットをサポートしていません',
+  'error_memory_insufficient': '動画変換にメモリが不足しています',
+  'error_rotation_general': '動画回転中にエラーが発生しました: @error',
+  'error_conversion_general': '動画変換中にエラーが発生しました: @error',
+
   // Convert Result
   'conversion_complete': '変換完了',
   'conversion_complete_title': '変換完了！',

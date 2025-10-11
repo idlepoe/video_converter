@@ -1,7 +1,7 @@
 name: video_converter
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.3+4
+version: 1.0.5+6
 environment:
   sdk: ^3.9.0
 dependencies:
@@ -21,6 +21,7 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   in_app_update: ^4.2.5
   flutter_launcher_icons: ^0.14.4
+  device_info_plus: ^10.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

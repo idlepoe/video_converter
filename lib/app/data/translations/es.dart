@@ -97,6 +97,19 @@ const Map<String, String> esTranslations = {
   'conversion_failed': 'Conversión falló',
   'conversion_error': 'Error de conversión: @error',
 
+  // Error Messages
+  'error_ffmpeg_not_available':
+      'El procesamiento de video no está disponible en este dispositivo',
+  'error_rotation_filter_not_supported':
+      'Este dispositivo no admite filtros de rotación de video',
+  'error_format_not_supported':
+      'Este dispositivo no admite el formato seleccionado',
+  'error_memory_insufficient':
+      'Memoria insuficiente para la conversión de video',
+  'error_rotation_general': 'Ocurrió un error al rotar el video: @error',
+  'error_conversion_general':
+      'Ocurrió un error durante la conversión de video: @error',
+
   // Convert Result
   'conversion_complete': 'Conversión Completa',
   'conversion_complete_title': '¡Conversión Completa!',

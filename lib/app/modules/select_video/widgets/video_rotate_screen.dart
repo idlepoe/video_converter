@@ -6,6 +6,7 @@ import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:get/get.dart';
 import 'dart:io';
 import 'dart:math' as math;
+import '../../../services/android_version_handler.dart';
 
 class VideoRotateScreen extends StatefulWidget {
   final String filePath;
@@ -37,13 +38,13 @@ class _VideoRotateScreenState extends State<VideoRotateScreen> {
     {
       'value': 90,
       'label': 'rotate_90_degrees',
-      'icon': Icons.rotate_90_degrees_ccw
+      'icon': Icons.rotate_90_degrees_ccw,
     },
     {'value': 180, 'label': 'rotate_180_degrees', 'icon': Icons.rotate_right},
     {
       'value': 270,
       'label': 'rotate_270_degrees',
-      'icon': Icons.rotate_90_degrees_cw
+      'icon': Icons.rotate_90_degrees_cw,
     },
   ];
 
@@ -55,8 +56,9 @@ class _VideoRotateScreenState extends State<VideoRotateScreen> {
 
   Future<void> _initializeVideoPlayer() async {
     try {
-      _videoPlayerController =
-          VideoPlayerController.file(File(widget.filePath));
+      _videoPlayerController = VideoPlayerController.file(
+        File(widget.filePath),
+      );
       await _videoPlayerController!.initialize();
       setState(() {
         _isLoading = false;
@@ -171,37 +173,40 @@ class _VideoRotateScreenState extends State<VideoRotateScreen> {
     });
 
     try {
+      // Android 버전 핸들러 초기화
+      await AndroidVersionHandler.instance.initialize();
+
+      // 디바이스 정보 로깅
+      AndroidVersionHandler.instance.logDeviceInfo();
+
+      // FFmpeg 호환성 체크
+      final isFFmpegCapable = await AndroidVersionHandler.instance
+          .checkFFmpegCapability();
+      if (!isFFmpegCapable) {
+        throw Exception('FFmpeg is not available on this device');
+      }
+
       final directory = await getTemporaryDirectory();
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final outputPath = '${directory.path}/rotated_video_$timestamp.mp4';
 
-      // FFmpeg를 사용하여 비디오 회전
       print('비디오 회전 시작: $_selectedRotation도');
+      print(
+        'Android 버전 카테고리: ${AndroidVersionHandler.instance.versionCategory}',
+      );
 
       setState(() {
         _progress = 0.1;
         _progressText = 'rotate_video_preparing_ffmpeg'.tr;
       });
 
-      // 회전 각도에 따른 FFmpeg 명령어 생성
-      String ffmpegCommand;
-      switch (_selectedRotation) {
-        case 90:
-          ffmpegCommand =
-              '-i "${widget.filePath}" -vf "transpose=1" -c:a copy "$outputPath"';
-          break;
-        case 180:
-          ffmpegCommand =
-              '-i "${widget.filePath}" -vf "transpose=1,transpose=1" -c:a copy "$outputPath"';
-          break;
-        case 270:
-          ffmpegCommand =
-              '-i "${widget.filePath}" -vf "transpose=2" -c:a copy "$outputPath"';
-          break;
-        default:
-          throw Exception('rotate_video_unsupported_angle'
-              .trParams({'angle': _selectedRotation.toString()}));
-      }
+      // 버전별 최적화된 FFmpeg 명령어 생성
+      final ffmpegCommand = AndroidVersionHandler.instance
+          .generateRotateCommand(
+            widget.filePath,
+            outputPath,
+            _selectedRotation,
+          );
 
       print('FFmpeg 명령어: $ffmpegCommand');
 
@@ -237,8 +242,11 @@ class _VideoRotateScreenState extends State<VideoRotateScreen> {
           // 성공 메시지 표시
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('rotate_video_complete'
-                  .trParams({'angle': _selectedRotation.toString()})),
+              content: Text(
+                'rotate_video_complete'.trParams({
+                  'angle': _selectedRotation.toString(),
+                }),
+              ),
               backgroundColor: Colors.green,
             ),
           );
@@ -253,15 +261,43 @@ class _VideoRotateScreenState extends State<VideoRotateScreen> {
         final failStackTrace = await session.getFailStackTrace();
         print('FFmpeg 실행 실패: $output');
         print('오류 스택: $failStackTrace');
-        throw Exception('rotate_video_ffmpeg_error'
-            .trParams({'error': output ?? 'Unknown error'}));
+        throw Exception(
+          'rotate_video_ffmpeg_error'.trParams({
+            'error': output ?? 'Unknown error',
+          }),
+        );
       }
     } catch (e) {
       print('비디오 회전 오류: $e');
+
+      // 디바이스별 에러 정보 로깅
+      final androidInfo = AndroidVersionHandler.instance.androidInfo;
+      if (androidInfo != null) {
+        print('오류 발생 디바이스 정보:');
+        print('- 브랜드: ${androidInfo.brand}');
+        print('- 모델: ${androidInfo.model}');
+        print('- Android 버전: ${androidInfo.version.release}');
+        print('- API 레벨: ${androidInfo.version.sdkInt}');
+        print('- 지원 아키텍처: ${androidInfo.supportedAbis}');
+      }
+
+      // 사용자에게 친화적인 에러 메시지 표시
+      String errorMessage;
+      if (e.toString().contains('FFmpeg is not available')) {
+        errorMessage = 'error_ffmpeg_not_available'.tr;
+      } else if (e.toString().contains('transpose')) {
+        errorMessage = 'error_rotation_filter_not_supported'.tr;
+      } else {
+        errorMessage = 'error_rotation_general'.trParams({
+          'error': e.toString(),
+        });
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('rotate_video_error'.trParams({'error': e.toString()})),
+          content: Text(errorMessage),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
         ),
       );
     } finally {
@@ -308,9 +344,7 @@ class _VideoRotateScreenState extends State<VideoRotateScreen> {
       ),
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF3182F6),
-              ),
+              child: CircularProgressIndicator(color: Color(0xFF3182F6)),
             )
           : Column(
               children: [
@@ -343,7 +377,8 @@ class _VideoRotateScreenState extends State<VideoRotateScreen> {
                                 onTap: () {
                                   setState(() {
                                     if (_videoPlayerController!
-                                        .value.isPlaying) {
+                                        .value
+                                        .isPlaying) {
                                       _videoPlayerController!.pause();
                                     } else {
                                       _videoPlayerController!.play();
@@ -529,8 +564,9 @@ class _VideoRotateScreenState extends State<VideoRotateScreen> {
                                       boxShadow: isSelected
                                           ? [
                                               BoxShadow(
-                                                color: const Color(0xFF3182F6)
-                                                    .withOpacity(0.3),
+                                                color: const Color(
+                                                  0xFF3182F6,
+                                                ).withOpacity(0.3),
                                                 blurRadius: 8,
                                                 offset: const Offset(0, 2),
                                               ),
@@ -657,7 +693,8 @@ class _VideoRotateScreenState extends State<VideoRotateScreen> {
                                 value: _progress,
                                 backgroundColor: const Color(0xFFE5E8EB),
                                 valueColor: const AlwaysStoppedAnimation<Color>(
-                                    Color(0xFF3182F6)),
+                                  Color(0xFF3182F6),
+                                ),
                               ),
                               const SizedBox(height: 8),
                               Text(
@@ -723,7 +760,7 @@ class _VideoRotateScreenState extends State<VideoRotateScreen> {
                                     const SizedBox(width: 8),
                                     Text(
                                       'rotate_video_rotate_angle'.trParams({
-                                        'angle': _selectedRotation.toString()
+                                        'angle': _selectedRotation.toString(),
                                       }),
                                       style: const TextStyle(
                                         fontSize: 16,

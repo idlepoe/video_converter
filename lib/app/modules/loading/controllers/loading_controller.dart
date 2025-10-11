@@ -10,6 +10,7 @@ import 'package:gallery_saver_plus/gallery_saver.dart';
 import 'package:video_converter/app/routes/app_pages.dart';
 import 'package:video_converter/app/modules/select_video/controllers/select_video_controller.dart';
 import 'package:video_converter/app/services/notification_service.dart';
+import 'package:video_converter/app/services/android_version_handler.dart';
 
 class LoadingController extends GetxController {
   final count = 0.obs;
@@ -36,6 +37,21 @@ class LoadingController extends GetxController {
 
   void _startLoading() async {
     try {
+      // Android 버전 핸들러 초기화
+      await AndroidVersionHandler.instance.initialize();
+
+      // 디바이스 정보 로깅
+      AndroidVersionHandler.instance.logDeviceInfo();
+
+      // FFmpeg 호환성 체크
+      final isFFmpegCapable = await AndroidVersionHandler.instance
+          .checkFFmpegCapability();
+      if (!isFFmpegCapable) {
+        statusMessage.value = 'FFmpeg is not available on this device';
+        isLoading.value = false;
+        return;
+      }
+
       // SelectVideoController에서 비디오 파일 정보 가져오기
       final selectVideoController = Get.find<SelectVideoController>();
       final videoFile = selectVideoController.videoFile.value;
@@ -113,28 +129,23 @@ class LoadingController extends GetxController {
         vfOptions.add('setpts=${1 / speed}*PTS');
       }
 
-      // FFmpeg 명령어 구성 (선택된 포맷에 맞는 코덱 사용)
-      String command = '-i "${videoFile.path}"';
-      command += ' -c:v ${_getVideoCodec(selectedFormat)}';
-      command += ' -c:a ${_getAudioCodec(selectedFormat)}';
-      command += ' -r $targetFps';
-
-      // 포맷별 특별한 옵션 적용
-      if (selectedFormat == 'WebP') {
-        command += ' -quality ${quality.toInt()}';
-        command += ' -loop 0';
-      } else if (selectedFormat == 'MP4' || selectedFormat == 'MOV') {
-        command += ' -crf ${_getCrfValue(quality)}';
-      } else {
-        command += ' -q:v ${_getQValue(quality)}';
-      }
-
-      command += ' -vf ${vfOptions.join(',')}';
-      command += ' -progress pipe:1';
-      command += ' "${outputFile.path}"';
+      // 버전별 최적화된 FFmpeg 명령어 생성
+      final command = AndroidVersionHandler.instance.generateConvertCommand(
+        inputPath: videoFile.path,
+        outputPath: outputFile.path,
+        format: selectedFormat,
+        width: targetWidth,
+        height: targetHeight,
+        fps: targetFps,
+        quality: quality,
+        speed: speed,
+      );
 
       // FFmpeg 명령어 출력
       print('FFmpeg Command: $command');
+      print(
+        'Android 버전 카테고리: ${AndroidVersionHandler.instance.versionCategory}',
+      );
 
       // FFmpeg 실행
       await FFmpegKit.executeAsync(
@@ -250,17 +261,42 @@ class LoadingController extends GetxController {
         },
       );
     } catch (e) {
-      statusMessage.value = 'conversion_error'.trParams({
-        'error': e.toString(),
-      });
+      // 디바이스별 에러 정보 로깅
+      final androidInfo = AndroidVersionHandler.instance.androidInfo;
+      if (androidInfo != null) {
+        print('변환 오류 발생 디바이스 정보:');
+        print('- 브랜드: ${androidInfo.brand}');
+        print('- 모델: ${androidInfo.model}');
+        print('- Android 버전: ${androidInfo.version.release}');
+        print('- API 레벨: ${androidInfo.version.sdkInt}');
+        print('- 지원 아키텍처: ${androidInfo.supportedAbis}');
+        print('- 버전 카테고리: ${AndroidVersionHandler.instance.versionCategory}');
+      }
+
+      // 사용자에게 친화적인 에러 메시지 표시
+      String errorMessage;
+      if (e.toString().contains('FFmpeg is not available')) {
+        errorMessage = 'error_ffmpeg_not_available'.tr;
+      } else if (e.toString().contains('codec')) {
+        errorMessage = 'error_format_not_supported'.tr;
+      } else if (e.toString().contains('memory') ||
+          e.toString().contains('Memory')) {
+        errorMessage = 'error_memory_insufficient'.tr;
+      } else {
+        errorMessage = 'error_conversion_general'.trParams({
+          'error': e.toString(),
+        });
+      }
+
+      statusMessage.value = errorMessage;
       isLoading.value = false;
 
       // 변환 실패 알림 표시
       await NotificationService.showConversionErrorNotification(
-        errorMessage: e.toString(),
+        errorMessage: errorMessage,
       );
 
-      Get.snackbar('Error', 'Conversion failed: $e');
+      Get.snackbar('Error', errorMessage);
     }
   }
 
@@ -284,57 +320,5 @@ class LoadingController extends GetxController {
       default:
         return 'webp';
     }
-  }
-
-  // 포맷별 비디오 코덱 반환
-  String _getVideoCodec(String format) {
-    switch (format) {
-      case 'WebP':
-        return 'libwebp';
-      case 'MP4':
-        return 'libx264';
-      case 'MKV':
-        return 'libx264';
-      case 'AVI':
-        return 'mpeg4';
-      case 'FLV':
-        return 'libx264';
-      case 'MOV':
-        return 'libx264';
-      default:
-        return 'libwebp';
-    }
-  }
-
-  // 포맷별 오디오 코덱 반환
-  String _getAudioCodec(String format) {
-    switch (format) {
-      case 'WebP':
-        return 'copy'; // WebP는 오디오 없음
-      case 'MP4':
-        return 'aac';
-      case 'MKV':
-        return 'libvorbis';
-      case 'AVI':
-        return 'mp3';
-      case 'FLV':
-        return 'mp3';
-      case 'MOV':
-        return 'aac';
-      default:
-        return 'copy';
-    }
-  }
-
-  // 품질을 CRF 값으로 변환 (0-51, 낮을수록 고품질)
-  int _getCrfValue(double quality) {
-    // quality 0-100을 CRF 51-0으로 변환
-    return (51 - (quality / 100 * 51)).round().clamp(0, 51);
-  }
-
-  // 품질을 Q 값으로 변환 (0-31, 낮을수록 고품질)
-  int _getQValue(double quality) {
-    // quality 0-100을 Q 31-0으로 변환
-    return (31 - (quality / 100 * 31)).round().clamp(0, 31);
   }
 }

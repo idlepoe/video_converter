@@ -50,30 +50,54 @@ class SelectVideoController extends GetxController {
 
   @override
   void onClose() {
-    videoPlayerController.value?.dispose();
+    // 비디오 플레이어 컨트롤러 안전하게 dispose
+    if (videoPlayerController.value != null) {
+      videoPlayerController.value!.dispose();
+      videoPlayerController.value = null;
+    }
     super.onClose();
   }
 
   Future<void> _initVideoPlayer(XFile file) async {
     try {
-      videoPlayerController.value?.dispose();
+      // 기존 컨트롤러가 있다면 안전하게 dispose
+      if (videoPlayerController.value != null) {
+        await videoPlayerController.value!.dispose();
+        videoPlayerController.value = null;
+      }
+
       final controller = VideoPlayerController.file(File(file.path));
       await controller.initialize();
-      videoPlayerController.value = controller;
-      videoDuration.value = controller.value.duration;
-      videoWidth.value = controller.value.size.width.toInt();
-      videoHeight.value = controller.value.size.height.toInt();
+
+      // 컨트롤러가 여전히 유효한지 확인
+      if (controller.value.isInitialized) {
+        videoPlayerController.value = controller;
+        videoDuration.value = controller.value.duration;
+        videoWidth.value = controller.value.size.width.toInt();
+        videoHeight.value = controller.value.size.height.toInt();
+        isVideoSelected.value = true;
+      } else {
+        await controller.dispose();
+      }
     } catch (e) {
       // 비디오 플레이어 초기화 오류 처리
+      print('Video player initialization error: $e');
+      videoPlayerController.value = null;
+      isVideoSelected.value = false;
     }
   }
 
-  void selectOtherVideo() {
+  Future<void> selectOtherVideo() async {
     isVideoSelected.value = false;
     videoFile.value = null;
     originalVideoFile.value = null;
-    videoPlayerController.value?.dispose();
-    videoPlayerController.value = null;
+
+    // 비디오 플레이어 컨트롤러 안전하게 dispose
+    if (videoPlayerController.value != null) {
+      await videoPlayerController.value!.dispose();
+      videoPlayerController.value = null;
+    }
+
     videoInfo.value = null;
     isTrimmed.value = false;
     videoWidth.value = null;
@@ -211,6 +235,8 @@ class SelectVideoController extends GetxController {
     } catch (e) {
       // CommonSnackBar.error(
       //     'error'.tr, 'An error occurred while selecting the video.'.tr);
+      print('Error picking video: $e');
+      isVideoSelected.value = false;
     }
   }
 
