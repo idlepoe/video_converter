@@ -6,6 +6,7 @@ const Map<String, String> idTranslations = {
   'tap_to_select_video': 'Ketuk untuk memilih video',
   'convert': 'Konversi',
   'cancel': 'Batal',
+  'go_back': 'Kembali',
   'other_video': 'Video Lain',
 
   // Video Settings
@@ -127,4 +128,12 @@ const Map<String, String> idTranslations = {
   'unknown': 'Tidak Diketahui',
   'gallery_app_not_found':
       'Aplikasi galeri tidak ditemukan. Silakan periksa galeri Anda secara manual.',
+
+  // Notifications
+  'notification_conversion_complete_title': '🎬 Konversi Video Selesai!',
+  'notification_conversion_complete_message':
+      '@fileName telah berhasil dikonversi ke @format dan disimpan ke galeri Anda.',
+  'notification_conversion_error_title': '❌ Konversi Gagal',
+  'notification_conversion_error_message':
+      'Konversi video gagal: @errorMessage',
 };

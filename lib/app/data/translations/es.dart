@@ -6,6 +6,7 @@ const Map<String, String> esTranslations = {
   'tap_to_select_video': 'Toca para seleccionar un video',
   'convert': 'Convertir',
   'cancel': 'Cancelar',
+  'go_back': 'Volver',
   'other_video': 'Otro Video',
 
   // Video Settings
@@ -128,4 +129,12 @@ const Map<String, String> esTranslations = {
   'unknown': 'Desconocido',
   'gallery_app_not_found':
       'App de galería no encontrada. Verifica tu galería manualmente.',
+
+  // Notifications
+  'notification_conversion_complete_title': '🎬 ¡Conversión de Video Completa!',
+  'notification_conversion_complete_message':
+      '@fileName ha sido convertido exitosamente a @format y guardado en tu galería.',
+  'notification_conversion_error_title': '❌ Conversión Fallida',
+  'notification_conversion_error_message':
+      'Conversión de video falló: @errorMessage',
 };

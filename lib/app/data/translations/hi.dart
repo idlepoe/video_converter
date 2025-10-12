@@ -6,6 +6,7 @@ const Map<String, String> hiTranslations = {
   'tap_to_select_video': 'वीडियो चुनने के लिए टैप करें',
   'convert': 'कन्वर्ट करें',
   'cancel': 'रद्द करें',
+  'go_back': 'वापस जाएं',
   'other_video': 'अन्य वीडियो',
 
   // Video Settings
@@ -124,4 +125,12 @@ const Map<String, String> hiTranslations = {
   'unknown': 'अज्ञात',
   'gallery_app_not_found':
       'गैलरी ऐप नहीं मिला। कृपया अपनी गैलरी को मैन्युअल रूप से जांचें।',
+
+  // Notifications
+  'notification_conversion_complete_title': '🎬 वीडियो रूपांतरण पूर्ण!',
+  'notification_conversion_complete_message':
+      '@fileName को सफलतापूर्वक @format में रूपांतरित किया गया और आपकी गैलरी में सहेजा गया।',
+  'notification_conversion_error_title': '❌ रूपांतरण विफल',
+  'notification_conversion_error_message':
+      'वीडियो रूपांतरण विफल: @errorMessage',
 };

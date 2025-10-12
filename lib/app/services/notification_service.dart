@@ -1,5 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -85,8 +86,11 @@ class NotificationService {
 
     await _notificationsPlugin.show(
       0, // 알림 ID
-      '🎬 Video Conversion Complete!',
-      '$fileName has been successfully converted to $format and saved to your gallery.',
+      'notification_conversion_complete_title'.tr,
+      'notification_conversion_complete_message'.trParams({
+        'fileName': fileName,
+        'format': format,
+      }),
       platformChannelSpecifics,
       payload: 'conversion_complete',
     );
@@ -123,8 +127,10 @@ class NotificationService {
 
     await _notificationsPlugin.show(
       1, // 알림 ID
-      '❌ Conversion Failed',
-      'Video conversion failed: $errorMessage',
+      'notification_conversion_error_title'.tr,
+      'notification_conversion_error_message'.trParams({
+        'errorMessage': errorMessage,
+      }),
       platformChannelSpecifics,
       payload: 'conversion_error',
     );

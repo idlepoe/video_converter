@@ -6,6 +6,7 @@ const Map<String, String> ruTranslations = {
   'tap_to_select_video': 'Нажмите, чтобы выбрать видео',
   'convert': 'Конвертировать',
   'cancel': 'Отмена',
+  'go_back': 'Назад',
   'other_video': 'Другое Видео',
 
   // Video Settings
@@ -126,4 +127,12 @@ const Map<String, String> ruTranslations = {
   'unknown': 'Неизвестно',
   'gallery_app_not_found':
       'Приложение галереи не найдено. Пожалуйста, проверьте галерею вручную.',
+
+  // Notifications
+  'notification_conversion_complete_title': '🎬 Конвертация Видео Завершена!',
+  'notification_conversion_complete_message':
+      '@fileName был успешно конвертирован в @format и сохранен в вашу галерею.',
+  'notification_conversion_error_title': '❌ Конвертация Не Удалась',
+  'notification_conversion_error_message':
+      'Конвертация видео не удалась: @errorMessage',
 };

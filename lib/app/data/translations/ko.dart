@@ -6,6 +6,7 @@ const Map<String, String> koTranslations = {
   'tap_to_select_video': '비디오를 선택하려면 탭하세요',
   'convert': '변환',
   'cancel': '취소',
+  'go_back': '뒤로 가기',
   'other_video': '다른 비디오',
 
   // Video Settings
@@ -88,6 +89,7 @@ const Map<String, String> koTranslations = {
   'conversion_completed_not_saved': '변환 완료되었지만 갤러리 저장에 실패했습니다',
   'conversion_completed_gallery_failed': '변환 완료되었지만 갤러리 저장 실패: @error',
   'conversion_failed': '변환 실패',
+  'conversion_cancelled': '변환 취소됨',
   'conversion_error': '변환 오류: @error',
 
   // Error Messages
@@ -113,4 +115,11 @@ const Map<String, String> koTranslations = {
   'view_in_gallery': '갤러리에서 보기',
   'unknown': '알 수 없음',
   'gallery_app_not_found': '갤러리 앱을 찾을 수 없습니다. 수동으로 갤러리를 확인해주세요.',
+
+  // Notifications
+  'notification_conversion_complete_title': '🎬 비디오 변환 완료!',
+  'notification_conversion_complete_message':
+      '@fileName이(가) @format으로 성공적으로 변환되어 갤러리에 저장되었습니다.',
+  'notification_conversion_error_title': '❌ 변환 실패',
+  'notification_conversion_error_message': '비디오 변환 실패: @errorMessage',
 };

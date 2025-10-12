@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
@@ -11,6 +12,7 @@ import 'package:video_converter/app/routes/app_pages.dart';
 import 'package:video_converter/app/modules/select_video/controllers/select_video_controller.dart';
 import 'package:video_converter/app/services/notification_service.dart';
 import 'package:video_converter/app/services/android_version_handler.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class LoadingController extends GetxController {
   final count = 0.obs;
@@ -19,9 +21,21 @@ class LoadingController extends GetxController {
   final statusMessage = 'preparing_conversion'.tr.obs;
   final outputPath = Rxn<String>();
 
+  // InterstitialAd 관련 변수들
+  InterstitialAd? _interstitialAd;
+  int _numInterstitialLoadAttempts = 0;
+  static const int maxFailedLoadAttempts = 3;
+  static String testAdUnitId = kDebugMode
+      ? 'ca-app-pub-3940256099942544/1033173712'
+      : 'ca-app-pub-4105607341592624/5024371861';
+
+  // FFmpeg 세션 관리
+  Session? _currentSession;
+
   @override
   void onInit() {
     super.onInit();
+    _createInterstitialAd();
     _startLoading();
   }
 
@@ -32,11 +46,16 @@ class LoadingController extends GetxController {
 
   @override
   void onClose() {
+    _interstitialAd?.dispose();
+    _cancelConversion();
     super.onClose();
   }
 
   void _startLoading() async {
     try {
+      // InterstitialAd 표시를 비동기적으로 시작 (다른 작업과 동시 진행)
+      _showInterstitialAd();
+
       // Android 버전 핸들러 초기화
       await AndroidVersionHandler.instance.initialize();
 
@@ -148,7 +167,7 @@ class LoadingController extends GetxController {
       );
 
       // FFmpeg 실행
-      await FFmpegKit.executeAsync(
+      _currentSession = await FFmpegKit.executeAsync(
         command,
         (Session session) async {
           // 변환 완료 시 호출
@@ -244,7 +263,6 @@ class LoadingController extends GetxController {
           } else {
             statusMessage.value = 'conversion_failed'.tr;
             isLoading.value = false;
-            Get.snackbar('Error', 'Video conversion failed');
           }
         },
         (Log log) {
@@ -320,5 +338,78 @@ class LoadingController extends GetxController {
       default:
         return 'webp';
     }
+  }
+
+  // InterstitialAd 생성 메서드
+  void _createInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: testAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          print('InterstitialAd loaded');
+          _interstitialAd = ad;
+          _numInterstitialLoadAttempts = 0;
+          _interstitialAd!.setImmersiveMode(true);
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          print('InterstitialAd failed to load: $error.');
+          _numInterstitialLoadAttempts += 1;
+          _interstitialAd = null;
+          if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
+            _createInterstitialAd();
+          }
+        },
+      ),
+    );
+  }
+
+  // InterstitialAd 표시 메서드 (비동기)
+  Future<void> _showInterstitialAd() async {
+    // 광고가 로드될 때까지 최대 5초 대기
+    int waitTime = 0;
+    while (_interstitialAd == null && waitTime < 5000) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      waitTime += 100;
+    }
+
+    if (_interstitialAd == null) {
+      print('Warning: InterstitialAd not loaded within timeout period.');
+      return;
+    }
+
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) =>
+          print('ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        _createInterstitialAd();
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        _createInterstitialAd();
+      },
+    );
+    _interstitialAd!.show();
+    _interstitialAd = null;
+  }
+
+  // 변환 중단 메서드
+  void _cancelConversion() {
+    if (_currentSession != null) {
+      print('Cancelling FFmpeg conversion...');
+      _currentSession!.cancel();
+      _currentSession = null;
+    }
+  }
+
+  // 공개 변환 중단 메서드
+  void cancelConversion() {
+    _cancelConversion();
+    isLoading.value = false;
+    statusMessage.value = 'conversion_cancelled'.tr;
+    Get.back();
   }
 }

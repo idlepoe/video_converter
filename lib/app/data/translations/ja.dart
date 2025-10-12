@@ -6,6 +6,7 @@ const Map<String, String> jaTranslations = {
   'tap_to_select_video': 'ビデオを選択するにはタップしてください',
   'convert': '変換',
   'cancel': 'キャンセル',
+  'go_back': '戻る',
   'other_video': '他のビデオ',
 
   // Video Settings
@@ -111,4 +112,11 @@ const Map<String, String> jaTranslations = {
   'view_in_gallery': 'ギャラリーで表示',
   'unknown': '不明',
   'gallery_app_not_found': 'ギャラリーアプリが見つかりません。手動でギャラリーを確認してください。',
+
+  // Notifications
+  'notification_conversion_complete_title': '🎬 ビデオ変換完了！',
+  'notification_conversion_complete_message':
+      '@fileNameが@formatに正常に変換され、ギャラリーに保存されました。',
+  'notification_conversion_error_title': '❌ 変換失敗',
+  'notification_conversion_error_message': 'ビデオ変換に失敗しました: @errorMessage',
 };

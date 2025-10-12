@@ -6,6 +6,7 @@ const Map<String, String> enTranslations = {
   'tap_to_select_video': 'Tap to select a video',
   'convert': 'Convert',
   'cancel': 'Cancel',
+  'go_back': 'Go Back',
   'other_video': 'Other Video',
 
   // Video Settings
@@ -95,6 +96,7 @@ const Map<String, String> enTranslations = {
   'conversion_completed_gallery_failed':
       'Conversion completed but gallery save failed: @error',
   'conversion_failed': 'Conversion failed',
+  'conversion_cancelled': 'Conversion cancelled',
   'conversion_error': 'Conversion error: @error',
 
   // Error Messages
@@ -127,4 +129,12 @@ const Map<String, String> enTranslations = {
   'unknown': 'Unknown',
   'gallery_app_not_found':
       'Gallery app not found. Please check your gallery manually.',
+
+  // Notifications
+  'notification_conversion_complete_title': '🎬 Video Conversion Complete!',
+  'notification_conversion_complete_message':
+      '@fileName has been successfully converted to @format and saved to your gallery.',
+  'notification_conversion_error_title': '❌ Conversion Failed',
+  'notification_conversion_error_message':
+      'Video conversion failed: @errorMessage',
 };

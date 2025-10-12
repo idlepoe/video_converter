@@ -6,6 +6,7 @@ const Map<String, String> zhTranslations = {
   'tap_to_select_video': '点击选择视频',
   'convert': '转换',
   'cancel': '取消',
+  'go_back': '返回',
   'other_video': '其他视频',
 
   // Video Settings
@@ -111,4 +112,11 @@ const Map<String, String> zhTranslations = {
   'view_in_gallery': '在相册中查看',
   'unknown': '未知',
   'gallery_app_not_found': '未找到相册应用。请手动检查您的相册。',
+
+  // Notifications
+  'notification_conversion_complete_title': '🎬 视频转换完成！',
+  'notification_conversion_complete_message':
+      '@fileName已成功转换为@format并保存到您的相册中。',
+  'notification_conversion_error_title': '❌ 转换失败',
+  'notification_conversion_error_message': '视频转换失败：@errorMessage',
 };

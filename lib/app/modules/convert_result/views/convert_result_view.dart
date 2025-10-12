@@ -21,7 +21,7 @@ class ConvertResultView extends GetView<ConvertResultController> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () => Get.back(),
+          onPressed: () => Get.offAllNamed('/select-video'),
         ),
       ),
       body: Obx(() {
