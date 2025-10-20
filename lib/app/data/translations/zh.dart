@@ -76,7 +76,7 @@ const Map<String, String> zhTranslations = {
   // Loading & Conversion
   'converting': '转换中...',
   'progress_estimate': '进度条是估算值。实际转换速度可能有所不同。',
-  'still_working': '仍在努力处理您的视频！',
+  'still_working': '仍在努力处理您的视频！ 🚀',
   'keep_app_open': '请保持应用打开以确保流畅转换！🎬',
   'preparing_conversion': '准备转换...',
   'no_video_selected': '未选择视频文件',

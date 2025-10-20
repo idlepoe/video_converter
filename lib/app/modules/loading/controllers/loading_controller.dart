@@ -410,6 +410,6 @@ class LoadingController extends GetxController {
     _cancelConversion();
     isLoading.value = false;
     statusMessage.value = 'conversion_cancelled'.tr;
-    Get.back();
+    Get.offAllNamed(Routes.SELECT_VIDEO);
   }
 }

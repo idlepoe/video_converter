@@ -76,7 +76,7 @@ const Map<String, String> jaTranslations = {
   // Loading & Conversion
   'converting': '変換中...',
   'progress_estimate': 'プログレスバーは推定値です。実際の変換速度は異なる場合があります。',
-  'still_working': 'あなたのビデオでまだ頑張って作業中です！',
+  'still_working': 'あなたのビデオでまだ頑張って作業中です！ 🚀',
   'keep_app_open': 'スムーズな変換のためにアプリを開いたままにしてください！🎬',
   'preparing_conversion': '変換を準備中...',
   'no_video_selected': 'ビデオファイルが選択されていません',

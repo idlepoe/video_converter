@@ -82,7 +82,7 @@ const Map<String, String> idTranslations = {
   'converting': 'Mengkonversi...',
   'progress_estimate':
       'Bar kemajuan adalah perkiraan. Kecepatan konversi aktual dapat bervariasi.',
-  'still_working': 'Masih bekerja keras pada video Anda!',
+  'still_working': 'Masih bekerja keras pada video Anda! 🚀',
   'keep_app_open':
       'Tolong jaga aplikasi tetap terbuka untuk konversi yang lancar! 🎬',
   'preparing_conversion': 'Mempersiapkan konversi...',

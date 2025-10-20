@@ -82,7 +82,7 @@ const Map<String, String> esTranslations = {
   'converting': 'Convirtiendo...',
   'progress_estimate':
       'La barra de progreso es una estimación. La velocidad real de conversión puede variar.',
-  'still_working': '¡Seguimos trabajando duro en tu video!',
+  'still_working': '¡Seguimos trabajando duro en tu video! 🚀',
   'keep_app_open': '¡Mantén la app abierta para una conversión fluida! 🎬',
   'preparing_conversion': 'Preparando conversión...',
   'no_video_selected': 'No se seleccionó archivo de video',

@@ -82,7 +82,7 @@ const Map<String, String> enTranslations = {
   'converting': 'Converting...',
   'progress_estimate':
       'The progress bar is an estimate. Actual conversion speed may vary.',
-  'still_working': 'Still working hard on your video!',
+  'still_working': 'Still working hard on your video! 🚀',
   'keep_app_open': 'Please keep the app open for smooth conversion! 🎬',
   'preparing_conversion': 'Preparing conversion...',
   'no_video_selected': 'No video file selected',

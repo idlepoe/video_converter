@@ -20,7 +20,10 @@ class LoadingView extends GetView<LoadingController> {
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => controller.cancelConversion(),
+        ),
       ),
       body: Obx(
         () => SingleChildScrollView(
@@ -115,7 +118,6 @@ class LoadingView extends GetView<LoadingController> {
                         shape: BoxShape.circle,
                       ),
                     ),
-                    const SizedBox(width: 8),
                     Text(
                       'still_working'.tr,
                       style: const TextStyle(
@@ -124,8 +126,6 @@ class LoadingView extends GetView<LoadingController> {
                         color: Color(0xFF0064FF),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    const Text('🚀', style: TextStyle(fontSize: 16)),
                   ],
                 ),
               ),

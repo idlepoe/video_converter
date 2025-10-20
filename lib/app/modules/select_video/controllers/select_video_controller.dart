@@ -278,6 +278,12 @@ class SelectVideoController extends GetxController {
 
   Future<void> handleConvert(Map<String, dynamic> options) async {
     try {
+      // 비디오 플레이어가 재생 중이라면 중지
+      if (videoPlayerController.value != null && 
+          videoPlayerController.value!.value.isPlaying) {
+        await videoPlayerController.value!.pause();
+      }
+
       // 변환 설정 저장
       await saveConvertSettings(
         selectedResolution: options['selectedResolution'],
