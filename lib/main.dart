@@ -20,8 +20,10 @@ void main() async {
       fallbackLocale: Locale('en'),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
-      builder: (context, child) =>
-          SafeArea(child: child ?? const SizedBox.shrink()),
+      builder: (context, child) => Container(
+        color: Colors.white,
+        child: SafeArea(child: child ?? const SizedBox.shrink()),
+      ),
     ),
   );
 }
