@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../widgets/common/custom_elevated_button.dart';
 
 class EmptyVideoWidget extends StatelessWidget {
   final VoidCallback onPickVideo;
@@ -61,7 +62,7 @@ class EmptyVideoWidget extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: Column(
             children: [
               // 개인정보 보호 안내
@@ -102,27 +103,9 @@ class EmptyVideoWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: onPickVideo,
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    'select_video'.tr,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+              CustomElevatedButton(
+                onPressed: onPickVideo,
+                text: 'select_video'.tr,
               ),
             ],
           ),

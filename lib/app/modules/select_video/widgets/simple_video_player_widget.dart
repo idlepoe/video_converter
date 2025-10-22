@@ -79,37 +79,73 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: widget.maxVideoHeight,
-                child: Container(
-                  color: Colors.black,
-                  child: const Center(
-                    child: CircularProgressIndicator(color: Colors.white),
-                  ),
+                child: Stack(
+                  children: [
+                    Container(
+                      color: Colors.black,
+                      child: const Center(
+                        child: CircularProgressIndicator(color: Colors.white),
+                      ),
+                    ),
+                    // 비디오 정보 (우측 하단)
+                    Positioned(
+                      bottom: 16,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.7),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'file_name_label'.tr + ' ${widget.fileName}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              '${widget.videoWidth ?? 0} x ${widget.videoHeight ?? 0}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _formatDuration(
+                                widget.videoDuration ?? Duration.zero,
+                              ),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _formatFileSize(
+                                File(widget.filePath).lengthSync(),
+                              ),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-            // 비디오 정보는 표시
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('file_name_label'.tr + ' ${widget.fileName}'),
-                  Text(
-                    'video_resolution_label'.tr +
-                        ' ${widget.videoWidth ?? 0} x ${widget.videoHeight ?? 0}',
-                  ),
-                  Text(
-                    'video_duration_label'.tr +
-                        ' ${_formatDuration(widget.videoDuration ?? Duration.zero)}',
-                  ),
-                  Text(
-                    'file_size_label'.tr +
-                        ' ${_formatFileSize(File(widget.filePath).lengthSync())}',
-                  ),
-                ],
               ),
             ),
           ],
@@ -143,7 +179,6 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
                   }
                 },
                 child: Stack(
-                  alignment: Alignment.center,
                   children: [
                     Container(
                       width: double.infinity,
@@ -159,18 +194,77 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
                       ),
                     ),
                     // 재생/일시정지 아이콘
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(50),
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: Icon(
+                          widget.videoController.value.isPlaying
+                              ? Icons.pause
+                              : Icons.play_arrow,
+                          color: Colors.white,
+                          size: 40,
+                        ),
                       ),
-                      child: Icon(
-                        widget.videoController.value.isPlaying
-                            ? Icons.pause
-                            : Icons.play_arrow,
-                        color: Colors.white,
-                        size: 40,
+                    ),
+                    // 비디오 정보 (우측 하단)
+                    Positioned(
+                      bottom: 16,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.7),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'file_name_label'.tr + ' ${widget.fileName}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              '${widget.videoWidth ?? 0} x ${widget.videoHeight ?? 0}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _formatDuration(
+                                widget.videoDuration ?? Duration.zero,
+                              ),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _formatFileSize(
+                                File(widget.filePath).lengthSync(),
+                              ),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -191,9 +285,9 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
                 Expanded(
                   child: SliderTheme(
                     data: SliderTheme.of(context).copyWith(
-                      activeTrackColor: const Color(0xFF3182F6),
+                      activeTrackColor: Colors.blue,
                       inactiveTrackColor: const Color(0xFFE5E8EB),
-                      thumbColor: const Color(0xFF3182F6),
+                      thumbColor: Colors.blue,
                       thumbShape: const RoundSliderThumbShape(
                         enabledThumbRadius: 8,
                       ),
@@ -229,64 +323,6 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
                   _formatDuration(duration),
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
-              ],
-            ),
-          ),
-
-          // 비디오 정보
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('file_name_label'.tr + ' ${widget.fileName}'),
-                Text(
-                  'video_resolution_label'.tr +
-                      ' ${widget.videoWidth ?? 0} x ${widget.videoHeight ?? 0}',
-                ),
-                Text(
-                  'video_duration_label'.tr +
-                      ' ${_formatDuration(widget.videoDuration ?? Duration.zero)}',
-                ),
-                Text(
-                  'file_size_label'.tr +
-                      ' ${_formatFileSize(File(widget.filePath).lengthSync())}',
-                ),
-                const SizedBox(height: 12),
-
-                // 파일 삭제 안내
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FA),
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: const Color(0xFFE9ECEF)),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.info_outline,
-                        color: Color(0xFF6C757D),
-                        size: 14,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'file_deletion_info'.tr,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF6C757D),
-                            height: 1.3,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
               ],
             ),
           ),

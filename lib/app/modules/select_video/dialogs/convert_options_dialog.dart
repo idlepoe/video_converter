@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../widgets/common/custom_elevated_button.dart';
 
 class ConvertOptionsDialog extends StatefulWidget {
   final int originalWidth;
@@ -60,7 +61,7 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -118,60 +119,25 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
               Row(
                 children: [
                   Expanded(
-                    child: SizedBox(
-                      height: 48,
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF6B7280),
-                          side: const BorderSide(
-                            color: Color(0xFFE5E7EB),
-                            width: 1,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          'cancel'.tr,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                    child: CustomElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      text: 'cancel'.tr,
+                      backgroundColor: const Color(0xFF9CA3AF),
+                      foregroundColor: Colors.white,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: SizedBox(
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          Navigator.pop(context); // bottomSheet 먼저 닫기
-                          await _saveSettings();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0064FF),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          'convert'.tr,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
+                    child: CustomElevatedButton(
+                      onPressed: () async {
+                        Navigator.pop(context); // bottomSheet 먼저 닫기
+                        await _saveSettings();
+                      },
+                      text: 'convert'.tr,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -434,6 +400,9 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
         Expanded(
           child: SliderTheme(
             data: SliderTheme.of(context).copyWith(
+              activeTrackColor: Colors.blue,
+              inactiveTrackColor: const Color(0xFFE5E8EB),
+              thumbColor: Colors.blue,
               trackHeight: 4,
               thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
               overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
@@ -443,7 +412,7 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
               min: min,
               max: max,
               onChanged: onChanged,
-              activeColor: const Color(0xFF0064FF),
+              activeColor: Colors.blue,
               inactiveColor: Colors.grey[300],
             ),
           ),

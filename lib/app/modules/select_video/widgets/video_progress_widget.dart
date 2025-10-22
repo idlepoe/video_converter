@@ -39,6 +39,9 @@ class VideoProgressWidget extends GetView<SelectVideoController> {
             Expanded(
               child: SliderTheme(
                 data: SliderTheme.of(context).copyWith(
+                  activeTrackColor: Colors.blue,
+                  inactiveTrackColor: const Color(0xFFE5E8EB),
+                  thumbColor: Colors.blue,
                   trackHeight: 4,
                   thumbShape: const RoundSliderThumbShape(
                     enabledThumbRadius: 8,
