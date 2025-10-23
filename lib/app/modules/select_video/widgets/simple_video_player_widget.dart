@@ -87,63 +87,6 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
                         child: CircularProgressIndicator(color: Colors.white),
                       ),
                     ),
-                    // 비디오 정보 (우측 하단)
-                    Positioned(
-                      bottom: 16,
-                      right: 16,
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'file_name_label'.tr + ' ${widget.fileName}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              '${widget.videoWidth ?? 0} x ${widget.videoHeight ?? 0}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _formatDuration(
-                                widget.videoDuration ?? Duration.zero,
-                              ),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _formatFileSize(
-                                File(widget.filePath).lengthSync(),
-                              ),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -215,6 +158,7 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
                       bottom: 16,
                       right: 16,
                       child: Container(
+                        width: 100,
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.7),
@@ -225,13 +169,13 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'file_name_label'.tr + ' ${widget.fileName}',
+                              ' ${widget.fileName}',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                               ),
-                              maxLines: 1,
+                              maxLines: 5,
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 6),

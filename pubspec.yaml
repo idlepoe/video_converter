@@ -1,7 +1,7 @@
 name: video_converter
 description: "WebP Converter - Convert videos to WebP and other formats with privacy protection"
 publish_to: 'none'
-version: 1.0.10+11
+version: 1.0.11+12
 environment:
   sdk: ^3.9.0
 dependencies:

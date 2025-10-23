@@ -10,21 +10,28 @@ class ConvertResultView extends GetView<ConvertResultController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FA),
-      appBar: AppBar(
-        title: Text(
-          'conversion_complete'.tr,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Get.offAllNamed(Routes.SELECT_VIDEO);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF7F8FA),
+        appBar: AppBar(
+          title: Text(
+            'conversion_complete'.tr,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.close, color: Colors.black),
+            onPressed: () => Get.offAllNamed(Routes.SELECT_VIDEO),
+          ),
         ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () => Get.offAllNamed(Routes.SELECT_VIDEO),
-        ),
-      ),
       body: Obx(() {
         if (controller.outputPath.value == null) {
           return Center(child: Text('no_converted_file'.tr));
@@ -211,67 +218,7 @@ class ConvertResultView extends GetView<ConvertResultController> {
                   }
                 }
               }),
-              const SizedBox(height: 16),
-
-              // 갤러리 저장 상태
-              // Container(
-              //   padding: const EdgeInsets.all(16),
-              //   decoration: BoxDecoration(
-              //     color: Colors.white,
-              //     borderRadius: BorderRadius.circular(12),
-              //     boxShadow: [
-              //       BoxShadow(
-              //         color: Colors.black.withOpacity(0.05),
-              //         blurRadius: 8,
-              //         offset: const Offset(0, 2),
-              //       ),
-              //     ],
-              //   ),
-              //   child: Row(
-              //     children: [
-              //       Icon(
-              //         controller.savedToGallery.value
-              //             ? Icons.check_circle
-              //             : Icons.error_outline,
-              //         color: controller.savedToGallery.value
-              //             ? Colors.green
-              //             : Colors.orange,
-              //         size: 20,
-              //       ),
-              //       const SizedBox(width: 10),
-              //       Expanded(
-              //         child: Column(
-              //           crossAxisAlignment: CrossAxisAlignment.start,
-              //           children: [
-              //             Text(
-              //               controller.savedToGallery.value
-              //                   ? 'saved_to_gallery'.tr
-              //                   : 'not_saved_to_gallery'.tr,
-              //               style: TextStyle(
-              //                 fontSize: 14,
-              //                 fontWeight: FontWeight.w600,
-              //                 color: controller.savedToGallery.value
-              //                     ? Colors.green
-              //                     : Colors.orange,
-              //               ),
-              //             ),
-              //             const SizedBox(height: 3),
-              //             Text(
-              //               controller.savedToGallery.value
-              //                   ? 'gallery_save_success_message'.tr
-              //                   : 'gallery_save_failed_message'.tr,
-              //               style: TextStyle(
-              //                 fontSize: 12,
-              //                 color: Colors.grey[600],
-              //               ),
-              //             ),
-              //           ],
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
 
               // 액션 버튼들
               Column(
@@ -311,7 +258,7 @@ class ConvertResultView extends GetView<ConvertResultController> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        backgroundColor: const Color(0xFF0064FF),
+                        backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
 
                         elevation: 0,
@@ -331,6 +278,7 @@ class ConvertResultView extends GetView<ConvertResultController> {
           ),
         );
       }),
+      ),
     );
   }
 }
