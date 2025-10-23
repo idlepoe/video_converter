@@ -13,6 +13,7 @@ import 'package:video_converter/app/modules/select_video/controllers/select_vide
 import 'package:video_converter/app/services/notification_service.dart';
 import 'package:video_converter/app/services/android_version_handler.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoadingController extends GetxController {
   final count = 0.obs;
@@ -28,6 +29,10 @@ class LoadingController extends GetxController {
   static String testAdUnitId = kDebugMode
       ? 'ca-app-pub-3940256099942544/1033173712'
       : 'ca-app-pub-4105607341592624/5024371861';
+  
+  // 광고 표시 간격 제한 관련 변수들
+  static const String _lastSeenAdKey = 'lastSeenAd';
+  static const int _adCooldownMinutes = 10; // 10분 간격
 
   // FFmpeg 세션 관리
   Session? _currentSession;
@@ -366,6 +371,21 @@ class LoadingController extends GetxController {
 
   // InterstitialAd 표시 메서드 (비동기)
   Future<void> _showInterstitialAd() async {
+    // SharedPreferences에서 마지막 광고 표시 시간 확인
+    final prefs = await SharedPreferences.getInstance();
+    final lastSeenAdTimeString = prefs.getString(_lastSeenAdKey);
+    
+    if (lastSeenAdTimeString != null) {
+      final lastSeenAdTime = DateTime.parse(lastSeenAdTimeString);
+      final now = DateTime.now();
+      final timeDifference = now.difference(lastSeenAdTime);
+      
+      if (timeDifference.inMinutes < _adCooldownMinutes) {
+        print('광고 표시 간격이 ${_adCooldownMinutes}분을 채우지 않았습니다. 남은 시간: ${_adCooldownMinutes - timeDifference.inMinutes}분');
+        return;
+      }
+    }
+
     // 광고가 로드될 때까지 최대 5초 대기
     int waitTime = 0;
     while (_interstitialAd == null && waitTime < 5000) {
@@ -379,8 +399,12 @@ class LoadingController extends GetxController {
     }
 
     _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (InterstitialAd ad) =>
-          print('ad onAdShowedFullScreenContent.'),
+      onAdShowedFullScreenContent: (InterstitialAd ad) async {
+        print('ad onAdShowedFullScreenContent.');
+        // 광고가 표시된 시간을 SharedPreferences에 저장
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(_lastSeenAdKey, DateTime.now().toIso8601String());
+      },
       onAdDismissedFullScreenContent: (InterstitialAd ad) {
         print('$ad onAdDismissedFullScreenContent.');
         ad.dispose();

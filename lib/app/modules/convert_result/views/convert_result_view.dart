@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_pages.dart';
+import '../../../widgets/common/banner_ad_widget.dart';
 import '../controllers/convert_result_controller.dart';
 import '../../select_video/widgets/simple_video_player_widget.dart';
 
@@ -218,6 +219,10 @@ class ConvertResultView extends GetView<ConvertResultController> {
                   }
                 }
               }),
+              const SizedBox(height: 24),
+
+              BannerAdWidget(),
+
               const SizedBox(height: 32),
 
               // 액션 버튼들
