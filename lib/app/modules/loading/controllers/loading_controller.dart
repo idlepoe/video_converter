@@ -14,6 +14,7 @@ import 'package:video_converter/app/services/notification_service.dart';
 import 'package:video_converter/app/services/android_version_handler.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class LoadingController extends GetxController {
   final count = 0.obs;
@@ -29,7 +30,7 @@ class LoadingController extends GetxController {
   static String testAdUnitId = kDebugMode
       ? 'ca-app-pub-3940256099942544/1033173712'
       : 'ca-app-pub-4105607341592624/5024371861';
-  
+
   // 광고 표시 간격 제한 관련 변수들
   static const String _lastSeenAdKey = 'lastSeenAd';
   static const int _adCooldownMinutes = 10; // 10분 간격
@@ -57,6 +58,9 @@ class LoadingController extends GetxController {
   }
 
   void _startLoading() async {
+    // SelectVideoController에서 비디오 파일 정보 가져오기 (try-catch 밖에서)
+    final selectVideoController = Get.find<SelectVideoController>();
+
     try {
       // InterstitialAd 표시를 비동기적으로 시작 (다른 작업과 동시 진행)
       _showInterstitialAd();
@@ -76,8 +80,6 @@ class LoadingController extends GetxController {
         return;
       }
 
-      // SelectVideoController에서 비디오 파일 정보 가져오기
-      final selectVideoController = Get.find<SelectVideoController>();
       final videoFile = selectVideoController.videoFile.value;
 
       if (videoFile == null) {
@@ -234,6 +236,23 @@ class LoadingController extends GetxController {
                 );
               } else {
                 print('Gallery Save: FAILED - GallerySaver returned false');
+
+                // 갤러리 저장 실패 시 Crashlytics로 전송
+                FirebaseCrashlytics.instance.recordError(
+                  Exception('GallerySaver returned false'),
+                  StackTrace.current,
+                  reason:
+                      'Gallery save returned false after successful conversion',
+                  information: [
+                    'Output File Path: ${outputFile.path}',
+                    'Selected Format: $selectedFormat',
+                    'File Extension: $fileExtension',
+                    'File Size: ${await outputFile.length()}',
+                    'Gallery Save Method: ${selectedFormat == 'WebP' ? 'saveImage' : 'saveVideo'}',
+                    'File Exists: ${await outputFile.exists()}',
+                  ],
+                );
+
                 statusMessage.value = 'conversion_completed_not_saved'.tr;
                 progress.value = 1.0;
                 isLoading.value = false;
@@ -250,6 +269,21 @@ class LoadingController extends GetxController {
               }
             } catch (e) {
               print('Gallery Save: ERROR - Exception occurred: $e');
+
+              // 갤러리 저장 실패 시 Crashlytics로 전송
+              FirebaseCrashlytics.instance.recordError(
+                e,
+                StackTrace.current,
+                reason: 'Gallery save failed after successful conversion',
+                information: [
+                  'Output File Path: ${outputFile.path}',
+                  'Selected Format: $selectedFormat',
+                  'File Extension: $fileExtension',
+                  'File Size: ${await outputFile.length()}',
+                  'Gallery Save Method: ${selectedFormat == 'WebP' ? 'saveImage' : 'saveVideo'}',
+                ],
+              );
+
               statusMessage.value = 'conversion_completed_gallery_failed'
                   .trParams({'error': e.toString()});
               progress.value = 1.0;
@@ -266,6 +300,30 @@ class LoadingController extends GetxController {
               );
             }
           } else {
+            // FFmpeg 변환 실패 시 Crashlytics로 전송
+            final errorMessage =
+                'FFmpeg conversion failed with return code: $returnCode';
+            print('FFmpeg Error: $errorMessage');
+
+            // Crashlytics에 에러 정보 전송
+            FirebaseCrashlytics.instance.recordError(
+              Exception(errorMessage),
+              StackTrace.current,
+              reason: 'FFmpeg conversion failed',
+              information: [
+                'Return Code: $returnCode',
+                'Input Path: ${videoFile.path}',
+                'Output Path: ${outputFile.path}',
+                'Selected Format: $selectedFormat',
+                'Quality: $quality',
+                'FPS: $fps',
+                'Speed: $speed',
+                'Target Resolution: ${selectedResolution}',
+                'Target Width: $targetWidth',
+                'Target Height: $targetHeight',
+              ],
+            );
+
             statusMessage.value = 'conversion_failed'.tr;
             isLoading.value = false;
           }
@@ -310,6 +368,27 @@ class LoadingController extends GetxController {
           'error': e.toString(),
         });
       }
+
+      // 변환 처리 실패 시 Crashlytics로 전송
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        StackTrace.current,
+        reason: 'Video conversion process failed',
+        information: [
+          'Error Type: ${e.runtimeType}',
+          'Error Message: ${e.toString()}',
+          'Android Brand: ${androidInfo?.brand ?? 'Unknown'}',
+          'Android Model: ${androidInfo?.model ?? 'Unknown'}',
+          'Android Version: ${androidInfo?.version.release ?? 'Unknown'}',
+          'API Level: ${androidInfo?.version.sdkInt ?? 'Unknown'}',
+          'Supported ABIs: ${androidInfo?.supportedAbis ?? 'Unknown'}',
+          'Version Category: ${AndroidVersionHandler.instance.versionCategory}',
+          'FFmpeg Capable: ${await AndroidVersionHandler.instance.checkFFmpegCapability()}',
+          'Video File Path: ${selectVideoController.videoFile.value?.path ?? 'Unknown'}',
+          'Video Width: ${selectVideoController.videoWidth.value ?? 'Unknown'}',
+          'Video Height: ${selectVideoController.videoHeight.value ?? 'Unknown'}',
+        ],
+      );
 
       statusMessage.value = errorMessage;
       isLoading.value = false;
@@ -374,14 +453,16 @@ class LoadingController extends GetxController {
     // SharedPreferences에서 마지막 광고 표시 시간 확인
     final prefs = await SharedPreferences.getInstance();
     final lastSeenAdTimeString = prefs.getString(_lastSeenAdKey);
-    
+
     if (lastSeenAdTimeString != null) {
       final lastSeenAdTime = DateTime.parse(lastSeenAdTimeString);
       final now = DateTime.now();
       final timeDifference = now.difference(lastSeenAdTime);
-      
+
       if (timeDifference.inMinutes < _adCooldownMinutes) {
-        print('광고 표시 간격이 ${_adCooldownMinutes}분을 채우지 않았습니다. 남은 시간: ${_adCooldownMinutes - timeDifference.inMinutes}분');
+        print(
+          '광고 표시 간격이 ${_adCooldownMinutes}분을 채우지 않았습니다. 남은 시간: ${_adCooldownMinutes - timeDifference.inMinutes}분',
+        );
         return;
       }
     }

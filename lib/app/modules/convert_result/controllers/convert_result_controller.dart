@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 import 'package:android_intent_plus/android_intent.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class ConvertResultController extends GetxController {
   final videoPlayerController = Rxn<VideoPlayerController>();
@@ -82,6 +83,21 @@ class ConvertResultController extends GetxController {
       }
     } catch (e) {
       print('Video player initialization error: $e');
+
+      // 비디오 플레이어 초기화 실패 시 Crashlytics로 전송
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        StackTrace.current,
+        reason: 'Video player initialization failed in result screen',
+        information: [
+          'Output Path: ${outputPath.value ?? 'Unknown'}',
+          'Original Path: ${originalPath.value ?? 'Unknown'}',
+          'File Size: ${fileSize.value ?? 'Unknown'}',
+          'Is WebP: ${isWebP.value}',
+          'Saved To Gallery: ${savedToGallery.value}',
+          'File Exists: ${outputPath.value != null ? File(outputPath.value!).existsSync() : 'Unknown'}',
+        ],
+      );
     }
   }
 
@@ -177,6 +193,23 @@ class ConvertResultController extends GetxController {
       throw Exception('All gallery launch methods failed');
     } catch (e) {
       print('Gallery Intent: Failed to launch gallery - $e');
+
+      // 갤러리 앱 실행 실패 시 Crashlytics로 전송
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        StackTrace.current,
+        reason: 'Failed to launch gallery app',
+        information: [
+          'Output Path: ${outputPath.value ?? 'Unknown'}',
+          'File Name: ${fileName.value ?? 'Unknown'}',
+          'File Size: ${fileSize.value ?? 'Unknown'}',
+          'Is WebP: ${isWebP.value}',
+          'Saved To Gallery: ${savedToGallery.value}',
+          'Error Type: ${e.runtimeType}',
+          'Error Message: ${e.toString()}',
+        ],
+      );
+
       Get.snackbar(
         'Info',
         'gallery_app_not_found'.tr,

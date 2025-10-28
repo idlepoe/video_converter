@@ -6,6 +6,7 @@ import 'package:video_player/video_player.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:in_app_update/in_app_update.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import '../widgets/video_rotate_screen.dart';
 import '../widgets/video_trim_screen.dart';
 import '../dialogs/convert_options_dialog.dart';
@@ -82,6 +83,22 @@ class SelectVideoController extends GetxController {
     } catch (e) {
       // 비디오 플레이어 초기화 오류 처리
       print('Video player initialization error: $e');
+
+      // Crashlytics에 에러 정보 전송
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        StackTrace.current,
+        reason: 'Video player initialization failed',
+        information: [
+          'File Path: ${file.path}',
+          'File Name: ${file.name}',
+          'File Size: ${await file.length()}',
+          'Video Width: ${videoWidth.value ?? 'Unknown'}',
+          'Video Height: ${videoHeight.value ?? 'Unknown'}',
+          'Video Duration: ${videoDuration.value?.inSeconds ?? 'Unknown'} seconds',
+        ],
+      );
+
       videoPlayerController.value = null;
       isVideoSelected.value = false;
     }
@@ -145,6 +162,18 @@ class SelectVideoController extends GetxController {
       await _initVideoPlayer(originalVideoFile.value!);
       Get.snackbar('Success', 'Original video restored');
     } catch (e) {
+      // 원본 비디오 복원 실패 시 Crashlytics로 전송
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        StackTrace.current,
+        reason: 'Failed to restore original video',
+        information: [
+          'Original File Path: ${originalVideoFile.value?.path ?? 'Unknown'}',
+          'Current File Path: ${videoFile.value?.path ?? 'Unknown'}',
+          'Is Trimmed: ${isTrimmed.value}',
+        ],
+      );
+
       Get.snackbar('Error', 'Failed to restore original video');
     }
   }
@@ -166,6 +195,21 @@ class SelectVideoController extends GetxController {
       await prefs.setDouble('convert_speed', speed);
       await prefs.setString('convert_selected_format', selectedFormat);
     } catch (e) {
+      // 설정 저장 실패 시 Crashlytics로 전송
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        StackTrace.current,
+        reason: 'Failed to save convert settings',
+        information: [
+          'Selected Resolution: $selectedResolution',
+          'FPS: $fps',
+          'Quality: $quality',
+          'Format: $format',
+          'Speed: $speed',
+          'Selected Format: $selectedFormat',
+        ],
+      );
+
       Get.snackbar('Error', 'Failed to save convert settings');
     }
   }
@@ -185,6 +229,17 @@ class SelectVideoController extends GetxController {
         'selectedFormat': prefs.getString('convert_selected_format') ?? 'WebP',
       };
     } catch (e) {
+      // 설정 불러오기 실패 시 Crashlytics로 전송
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        StackTrace.current,
+        reason: 'Failed to load convert settings',
+        information: [
+          'Error Type: ${e.runtimeType}',
+          'Error Message: ${e.toString()}',
+        ],
+      );
+
       return {
         'selectedResolution': 0, // 기본값은 원본 해상도
         'fps': 30.0,
@@ -233,6 +288,18 @@ class SelectVideoController extends GetxController {
         await _initVideoPlayer(file);
       }
     } catch (e) {
+      // 비디오 선택 실패 시 Crashlytics로 전송
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        StackTrace.current,
+        reason: 'Failed to pick video from gallery',
+        information: [
+          'Error Type: ${e.runtimeType}',
+          'Error Message: ${e.toString()}',
+          'Picker Source: ImageSource.gallery',
+        ],
+      );
+
       // CommonSnackBar.error(
       //     'error'.tr, 'An error occurred while selecting the video.'.tr);
       print('Error picking video: $e');
@@ -279,7 +346,7 @@ class SelectVideoController extends GetxController {
   Future<void> handleConvert(Map<String, dynamic> options) async {
     try {
       // 비디오 플레이어가 재생 중이라면 중지
-      if (videoPlayerController.value != null && 
+      if (videoPlayerController.value != null &&
           videoPlayerController.value!.value.isPlaying) {
         await videoPlayerController.value!.pause();
       }
@@ -297,6 +364,22 @@ class SelectVideoController extends GetxController {
       // LoadingView로 이동
       Get.toNamed(Routes.LOADING);
     } catch (e) {
+      // 변환 시작 실패 시 Crashlytics로 전송
+      FirebaseCrashlytics.instance.recordError(
+        e,
+        StackTrace.current,
+        reason: 'Failed to start video conversion',
+        information: [
+          'Video File Path: ${videoFile.value?.path ?? 'Unknown'}',
+          'Video File Name: ${videoFile.value?.name ?? 'Unknown'}',
+          'Video Width: ${videoWidth.value ?? 'Unknown'}',
+          'Video Height: ${videoHeight.value ?? 'Unknown'}',
+          'Video Duration: ${videoDuration.value?.inSeconds ?? 'Unknown'} seconds',
+          'Is Trimmed: ${isTrimmed.value}',
+          'Options: $options',
+        ],
+      );
+
       Get.snackbar('Error', 'Failed to start conversion: $e');
     }
   }

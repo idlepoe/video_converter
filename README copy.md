@@ -1,352 +1,267 @@
-// Copyright 2021 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// ignore_for_file: require_trailing_commas
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-// ignore_for_file: public_member_api_docs
+import 'dart:async';
+import 'dart:io';
 
-import 'dart:io' show Platform;
-
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'dart:developer';
 
-import 'anchored_adaptive_example.dart';
-import 'fluid_example.dart';
-import 'inline_adaptive_example.dart';
-import 'native_template_example.dart';
-import 'reusable_inline_example.dart';
-import 'webview_example.dart';
+import 'firebase_options.dart';
 
-void main() {
+// Toggle this to cause an async error to be thrown during initialization
+// and to test that runZonedGuarded() catches the error
+const _kShouldTestAsyncErrorOnInit = false;
+
+// Toggle this for testing Crashlytics in your app locally.
+const _kTestingCrashlytics = true;
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  const fatalError = true;
+  // Non-async exceptions
+  FlutterError.onError = (errorDetails) {
+    if (fatalError) {
+      // If you want to record a "fatal" exception
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+      // ignore: dead_code
+    } else {
+      // If you want to record a "non-fatal" exception
+      FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
+    }
+  };
+  // Async exceptions
+  PlatformDispatcher.instance.onError = (error, stack) {
+    if (fatalError) {
+      // If you want to record a "fatal" exception
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      // ignore: dead_code
+    } else {
+      // If you want to record a "non-fatal" exception
+      FirebaseCrashlytics.instance.recordError(error, stack);
+    }
+    return true;
+  };
   runApp(MyApp());
 }
 
-// You can also test with your own ad unit IDs by registering your device as a
-// test device. Check the logs for your device's ID value.
-const String testDevice = 'YOUR_DEVICE_ID';
-const int maxFailedLoadAttempts = 3;
-
 class MyApp extends StatefulWidget {
+  MyApp({Key? key}) : super(key: key);
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  static final AdRequest request = AdRequest(
-    keywords: <String>['foo', 'bar'],
-    contentUrl: 'http://foo.com/bar.html',
-    nonPersonalizedAds: true,
-  );
+  late Future<void> _initializeFlutterFireFuture;
+  bool _crashlyticsEnabled = true;
 
-  static const interstitialButtonText = 'InterstitialAd';
-  static const rewardedButtonText = 'RewardedAd';
-  static const rewardedInterstitialButtonText = 'RewardedInterstitialAd';
-  static const fluidButtonText = 'Fluid';
-  static const inlineAdaptiveButtonText = 'Inline adaptive';
-  static const anchoredAdaptiveButtonText = 'Anchored adaptive';
-  static const nativeTemplateButtonText = 'Native template';
-  static const webviewExampleButtonText = 'Register WebView';
-  static const adInspectorButtonText = 'Ad Inspector';
+  Future<void> _testAsyncErrorOnInit() async {
+    Future<void>.delayed(const Duration(seconds: 2), () {
+      final List<int> list = <int>[];
+      print(list[100]);
+    });
+  }
 
-  InterstitialAd? _interstitialAd;
-  int _numInterstitialLoadAttempts = 0;
+  // Define an async function to initialize FlutterFire
+  Future<void> _initializeFlutterFire() async {
+    if (_kTestingCrashlytics) {
+      // Force enable crashlytics collection enabled if we're testing it.
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+      _crashlyticsEnabled = true;
+    } else {
+      // Else only enable it in non-debug builds.
+      // You could additionally extend this to allow users to opt-in.
+      const enabled = !kDebugMode;
+      await FirebaseCrashlytics.instance
+          .setCrashlyticsCollectionEnabled(enabled);
+      _crashlyticsEnabled = enabled;
+    }
 
-  RewardedAd? _rewardedAd;
-  int _numRewardedLoadAttempts = 0;
-
-  RewardedInterstitialAd? _rewardedInterstitialAd;
-  int _numRewardedInterstitialLoadAttempts = 0;
+    if (_kShouldTestAsyncErrorOnInit) {
+      await _testAsyncErrorOnInit();
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    MobileAds.instance.updateRequestConfiguration(
-        RequestConfiguration(testDeviceIds: [testDevice]));
-    _createInterstitialAd();
-    _createRewardedAd();
-    _createRewardedInterstitialAd();
-  }
-
-  void _createInterstitialAd() {
-    InterstitialAd.load(
-        adUnitId: Platform.isAndroid
-            ? 'ca-app-pub-3940256099942544/1033173712'
-            : 'ca-app-pub-3940256099942544/4411468910',
-        request: request,
-        adLoadCallback: InterstitialAdLoadCallback(
-          onAdLoaded: (InterstitialAd ad) {
-            print('$ad loaded');
-            _interstitialAd = ad;
-            _numInterstitialLoadAttempts = 0;
-            _interstitialAd!.setImmersiveMode(true);
-          },
-          onAdFailedToLoad: (LoadAdError error) {
-            print('InterstitialAd failed to load: $error.');
-            _numInterstitialLoadAttempts += 1;
-            _interstitialAd = null;
-            if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
-              _createInterstitialAd();
-            }
-          },
-        ));
-  }
-
-  void _showInterstitialAd() {
-    if (_interstitialAd == null) {
-      print('Warning: attempt to show interstitial before loaded.');
-      return;
-    }
-    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (InterstitialAd ad) =>
-          print('ad onAdShowedFullScreenContent.'),
-      onAdDismissedFullScreenContent: (InterstitialAd ad) {
-        print('$ad onAdDismissedFullScreenContent.');
-        ad.dispose();
-        _createInterstitialAd();
-      },
-      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-        print('$ad onAdFailedToShowFullScreenContent: $error');
-        ad.dispose();
-        _createInterstitialAd();
-      },
-    );
-    _interstitialAd!.show();
-    _interstitialAd = null;
-  }
-
-  void _createRewardedAd() {
-    RewardedAd.load(
-        adUnitId: Platform.isAndroid
-            ? 'ca-app-pub-3940256099942544/5224354917'
-            : 'ca-app-pub-3940256099942544/1712485313',
-        request: request,
-        rewardedAdLoadCallback: RewardedAdLoadCallback(
-          onAdLoaded: (RewardedAd ad) {
-            print('$ad loaded.');
-            _rewardedAd = ad;
-            _numRewardedLoadAttempts = 0;
-          },
-          onAdFailedToLoad: (LoadAdError error) {
-            print('RewardedAd failed to load: $error');
-            _rewardedAd = null;
-            _numRewardedLoadAttempts += 1;
-            if (_numRewardedLoadAttempts < maxFailedLoadAttempts) {
-              _createRewardedAd();
-            }
-          },
-        ));
-  }
-
-  void _showRewardedAd() {
-    if (_rewardedAd == null) {
-      print('Warning: attempt to show rewarded before loaded.');
-      return;
-    }
-    _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (RewardedAd ad) =>
-          print('ad onAdShowedFullScreenContent.'),
-      onAdDismissedFullScreenContent: (RewardedAd ad) {
-        print('$ad onAdDismissedFullScreenContent.');
-        ad.dispose();
-        _createRewardedAd();
-      },
-      onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
-        print('$ad onAdFailedToShowFullScreenContent: $error');
-        ad.dispose();
-        _createRewardedAd();
-      },
-    );
-
-    _rewardedAd!.setImmersiveMode(true);
-    _rewardedAd!.show(
-        onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
-      print('$ad with reward $RewardItem(${reward.amount}, ${reward.type})');
-    });
-    _rewardedAd = null;
-  }
-
-  void _createRewardedInterstitialAd() {
-    RewardedInterstitialAd.load(
-        adUnitId: Platform.isAndroid
-            ? 'ca-app-pub-3940256099942544/5354046379'
-            : 'ca-app-pub-3940256099942544/6978759866',
-        request: request,
-        rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
-          onAdLoaded: (RewardedInterstitialAd ad) {
-            print('$ad loaded.');
-            _rewardedInterstitialAd = ad;
-            _numRewardedInterstitialLoadAttempts = 0;
-          },
-          onAdFailedToLoad: (LoadAdError error) {
-            print('RewardedInterstitialAd failed to load: $error');
-            _rewardedInterstitialAd = null;
-            _numRewardedInterstitialLoadAttempts += 1;
-            if (_numRewardedInterstitialLoadAttempts < maxFailedLoadAttempts) {
-              _createRewardedInterstitialAd();
-            }
-          },
-        ));
-  }
-
-  void _showRewardedInterstitialAd() {
-    if (_rewardedInterstitialAd == null) {
-      print('Warning: attempt to show rewarded interstitial before loaded.');
-      return;
-    }
-    _rewardedInterstitialAd!.fullScreenContentCallback =
-        FullScreenContentCallback(
-      onAdShowedFullScreenContent: (RewardedInterstitialAd ad) =>
-          print('$ad onAdShowedFullScreenContent.'),
-      onAdDismissedFullScreenContent: (RewardedInterstitialAd ad) {
-        print('$ad onAdDismissedFullScreenContent.');
-        ad.dispose();
-        _createRewardedInterstitialAd();
-      },
-      onAdFailedToShowFullScreenContent:
-          (RewardedInterstitialAd ad, AdError error) {
-        print('$ad onAdFailedToShowFullScreenContent: $error');
-        ad.dispose();
-        _createRewardedInterstitialAd();
-      },
-    );
-
-    _rewardedInterstitialAd!.setImmersiveMode(true);
-    _rewardedInterstitialAd!.show(
-        onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
-      print('$ad with reward $RewardItem(${reward.amount}, ${reward.type})');
-    });
-    _rewardedInterstitialAd = null;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _interstitialAd?.dispose();
-    _rewardedAd?.dispose();
-    _rewardedInterstitialAd?.dispose();
+    _initializeFlutterFireFuture = _initializeFlutterFire();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Builder(builder: (BuildContext context) {
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('AdMob Plugin example app'),
-            actions: <Widget>[
-              PopupMenuButton<String>(
-                onSelected: (String result) {
-                  switch (result) {
-                    case interstitialButtonText:
-                      _showInterstitialAd();
-                      break;
-                    case rewardedButtonText:
-                      _showRewardedAd();
-                      break;
-                    case rewardedInterstitialButtonText:
-                      _showRewardedInterstitialAd();
-                      break;
-                    case fluidButtonText:
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => FluidExample()),
-                      );
-                      break;
-                    case inlineAdaptiveButtonText:
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => InlineAdaptiveExample()),
-                      );
-                      break;
-                    case anchoredAdaptiveButtonText:
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AnchoredAdaptiveExample()),
-                      );
-                      break;
-                    case nativeTemplateButtonText:
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => NativeTemplateExample()),
-                      );
-                      break;
-                    case webviewExampleButtonText:
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => WebViewExample()),
-                      );
-                      break;
-                    case adInspectorButtonText:
-                      MobileAds.instance.openAdInspector((error) => log(
-                          'Ad Inspector ' +
-                              (error == null
-                                  ? 'opened.'
-                                  : 'error: ' + (error.message ?? ''))));
-                      break;
-                    default:
-                      throw AssertionError('unexpected button: $result');
-                  }
-                },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  PopupMenuItem<String>(
-                    value: interstitialButtonText,
-                    child: Text(interstitialButtonText),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Crashlytics example app'),
+        ),
+        body: FutureBuilder(
+          future: _initializeFlutterFireFuture,
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.done:
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                }
+                return Center(
+                  child: Column(
+                    children: <Widget>[
+                      ElevatedButton(
+                        onPressed: () async {
+                          final newValue = !_crashlyticsEnabled;
+                          await FirebaseCrashlytics.instance
+                              .setCrashlyticsCollectionEnabled(newValue);
+                          setState(() {
+                            _crashlyticsEnabled = newValue;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(
+                                'Crashlytics reporting has been ${newValue ? 'enabled' : 'disabled'}.'),
+                            duration: const Duration(seconds: 3),
+                          ));
+                        },
+                        child: Text(_crashlyticsEnabled
+                            ? 'Disable Crashlytics'
+                            : 'Enable Crashlytics'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          FirebaseCrashlytics.instance
+                              .setCustomKey('example', 'flutterfire');
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text(
+                                'Custom Key "example: flutterfire" has been set \n'
+                                'Key will appear in Firebase Console once an error has been reported.'),
+                            duration: Duration(seconds: 5),
+                          ));
+                        },
+                        child: const Text('Key'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          FirebaseCrashlytics.instance
+                              .log('This is a log example');
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text(
+                                'The message "This is a log example" has been logged \n'
+                                'Message will appear in Firebase Console once an error has been reported.'),
+                            duration: Duration(seconds: 5),
+                          ));
+                        },
+                        child: const Text('Log'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text('App will crash is 5 seconds \n'
+                                'Please reopen to send data to Crashlytics'),
+                            duration: Duration(seconds: 5),
+                          ));
+
+                          // Delay crash for 5 seconds
+                          sleep(const Duration(seconds: 5));
+
+                          // Use FirebaseCrashlytics to throw an error. Use this for
+                          // confirmation that errors are being correctly reported.
+                          FirebaseCrashlytics.instance.crash();
+                        },
+                        child: const Text('Crash'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text(
+                                'Thrown error has been caught and sent to Crashlytics.'),
+                            duration: Duration(seconds: 5),
+                          ));
+
+                          // Example of thrown error, it will be caught and sent to
+                          // Crashlytics.
+                          throw StateError('Uncaught error thrown by app');
+                        },
+                        child: const Text('Throw Error'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text(
+                                'Uncaught Exception that is handled by second parameter of runZonedGuarded.'),
+                            duration: Duration(seconds: 5),
+                          ));
+
+                          // Example of an exception that does not get caught
+                          // by `FlutterError.onError` but is caught by
+                          // `runZonedGuarded`.
+                          runZonedGuarded(() {
+                            Future<void>.delayed(const Duration(seconds: 2),
+                                () {
+                              final List<int> list = <int>[];
+                              print(list[100]);
+                            });
+                          }, FirebaseCrashlytics.instance.recordError);
+                        },
+                        child: const Text('Async out of bounds'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          try {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('Recorded Error'),
+                              duration: Duration(seconds: 5),
+                            ));
+                            throw Error();
+                          } catch (e, s) {
+                            // "reason" will append the word "thrown" in the
+                            // Crashlytics console.
+                            await FirebaseCrashlytics.instance.recordError(e, s,
+                                reason: 'as an example of fatal error',
+                                fatal: true);
+                          }
+                        },
+                        child: const Text('Record Fatal Error'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          try {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('Recorded Error'),
+                              duration: Duration(seconds: 5),
+                            ));
+                            throw Error();
+                          } catch (e, s) {
+                            // "reason" will append the word "thrown" in the
+                            // Crashlytics console.
+                            await FirebaseCrashlytics.instance.recordError(e, s,
+                                reason: 'as an example of non-fatal error');
+                          }
+                        },
+                        child: const Text('Record Non-Fatal Error'),
+                      ),
+                    ],
                   ),
-                  PopupMenuItem<String>(
-                    value: rewardedButtonText,
-                    child: Text(rewardedButtonText),
-                  ),
-                  PopupMenuItem<String>(
-                    value: rewardedInterstitialButtonText,
-                    child: Text(rewardedInterstitialButtonText),
-                  ),
-                  PopupMenuItem<String>(
-                    value: fluidButtonText,
-                    child: Text(fluidButtonText),
-                  ),
-                  PopupMenuItem<String>(
-                    value: inlineAdaptiveButtonText,
-                    child: Text(inlineAdaptiveButtonText),
-                  ),
-                  PopupMenuItem<String>(
-                    value: anchoredAdaptiveButtonText,
-                    child: Text(anchoredAdaptiveButtonText),
-                  ),
-                  PopupMenuItem<String>(
-                    value: nativeTemplateButtonText,
-                    child: Text(nativeTemplateButtonText),
-                  ),
-                  PopupMenuItem<String>(
-                    value: webviewExampleButtonText,
-                    child: Text(webviewExampleButtonText),
-                  ),
-                  PopupMenuItem<String>(
-                    value: adInspectorButtonText,
-                    child: Text(adInspectorButtonText),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          body: SafeArea(child: ReusableInlineExample()),
-        );
-      }),
+                );
+              default:
+                return const Center(child: Text('Loading'));
+            }
+          },
+        ),
+      ),
     );
   }
 }
