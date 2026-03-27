@@ -20,6 +20,7 @@ void main() async {
       fallbackLocale: Locale('en'),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
+      debugShowCheckedModeBanner: false,
       builder: (context, child) => Container(
         color: Colors.white,
         child: SafeArea(child: child ?? const SizedBox.shrink()),

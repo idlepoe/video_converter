@@ -12,7 +12,6 @@ import 'package:video_converter/app/routes/app_pages.dart';
 import 'package:video_converter/app/modules/select_video/controllers/select_video_controller.dart';
 import 'package:video_converter/app/services/notification_service.dart';
 import 'package:video_converter/app/services/android_version_handler.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
@@ -23,8 +22,6 @@ class LoadingController extends GetxController {
   final statusMessage = 'preparing_conversion'.tr.obs;
   final outputPath = Rxn<String>();
 
-  // InterstitialAd 관련 변수들
-  InterstitialAd? _interstitialAd;
   int _numInterstitialLoadAttempts = 0;
   static const int maxFailedLoadAttempts = 3;
   static String testAdUnitId = kDebugMode
@@ -41,7 +38,6 @@ class LoadingController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _createInterstitialAd();
     _startLoading();
   }
 
@@ -52,7 +48,6 @@ class LoadingController extends GetxController {
 
   @override
   void onClose() {
-    _interstitialAd?.dispose();
     _cancelConversion();
     super.onClose();
   }
@@ -63,7 +58,7 @@ class LoadingController extends GetxController {
 
     try {
       // InterstitialAd 표시를 비동기적으로 시작 (다른 작업과 동시 진행)
-      _showInterstitialAd();
+      // _showInterstitialAd();
 
       // Android 버전 핸들러 초기화
       await AndroidVersionHandler.instance.initialize();
@@ -422,83 +417,6 @@ class LoadingController extends GetxController {
       default:
         return 'webp';
     }
-  }
-
-  // InterstitialAd 생성 메서드
-  void _createInterstitialAd() {
-    InterstitialAd.load(
-      adUnitId: testAdUnitId,
-      request: const AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (InterstitialAd ad) {
-          print('InterstitialAd loaded');
-          _interstitialAd = ad;
-          _numInterstitialLoadAttempts = 0;
-          _interstitialAd!.setImmersiveMode(true);
-        },
-        onAdFailedToLoad: (LoadAdError error) {
-          print('InterstitialAd failed to load: $error.');
-          _numInterstitialLoadAttempts += 1;
-          _interstitialAd = null;
-          if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
-            _createInterstitialAd();
-          }
-        },
-      ),
-    );
-  }
-
-  // InterstitialAd 표시 메서드 (비동기)
-  Future<void> _showInterstitialAd() async {
-    // SharedPreferences에서 마지막 광고 표시 시간 확인
-    final prefs = await SharedPreferences.getInstance();
-    final lastSeenAdTimeString = prefs.getString(_lastSeenAdKey);
-
-    if (lastSeenAdTimeString != null) {
-      final lastSeenAdTime = DateTime.parse(lastSeenAdTimeString);
-      final now = DateTime.now();
-      final timeDifference = now.difference(lastSeenAdTime);
-
-      if (timeDifference.inMinutes < _adCooldownMinutes) {
-        print(
-          '광고 표시 간격이 ${_adCooldownMinutes}분을 채우지 않았습니다. 남은 시간: ${_adCooldownMinutes - timeDifference.inMinutes}분',
-        );
-        return;
-      }
-    }
-
-    // 광고가 로드될 때까지 최대 5초 대기
-    int waitTime = 0;
-    while (_interstitialAd == null && waitTime < 5000) {
-      await Future.delayed(const Duration(milliseconds: 100));
-      waitTime += 100;
-    }
-
-    if (_interstitialAd == null) {
-      print('Warning: InterstitialAd not loaded within timeout period.');
-      return;
-    }
-
-    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (InterstitialAd ad) async {
-        print('ad onAdShowedFullScreenContent.');
-        // 광고가 표시된 시간을 SharedPreferences에 저장
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(_lastSeenAdKey, DateTime.now().toIso8601String());
-      },
-      onAdDismissedFullScreenContent: (InterstitialAd ad) {
-        print('$ad onAdDismissedFullScreenContent.');
-        ad.dispose();
-        _createInterstitialAd();
-      },
-      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-        print('$ad onAdFailedToShowFullScreenContent: $error');
-        ad.dispose();
-        _createInterstitialAd();
-      },
-    );
-    _interstitialAd!.show();
-    _interstitialAd = null;
   }
 
   // 변환 중단 메서드
