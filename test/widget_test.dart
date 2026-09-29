@@ -1,30 +1,22 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:video_converter/main.dart';
+import 'package:video_converter/app/models/conversion_job.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  test('conversion options create an immutable queue snapshot', () {
+    final source = <String, dynamic>{
+      'selectedResolution': 1,
+      'fps': 24.0,
+      'quality': 80.0,
+      'speed': 1.5,
+      'selectedFormat': 'MP4',
+    };
+    final options = ConversionOptions.fromMap(source);
+    source['selectedFormat'] = 'WebP';
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(options.format, 'MP4');
+    expect(options.selectedResolution, 1);
+    expect(options.fps, 24);
+    expect(options.quality, 80);
+    expect(options.speed, 1.5);
   });
 }

@@ -1,18 +1,21 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:video_converter/app/routes/app_pages.dart';
+import 'package:video_converter/app/models/conversion_job.dart';
+import 'package:video_converter/app/services/batch_conversion_service.dart';
 import 'package:video_player/video_player.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:video_converter/app/models/selected_video_item.dart';
 import '../widgets/video_rotate_screen.dart';
 import '../widgets/video_trim_screen.dart';
 import '../dialogs/convert_options_dialog.dart';
 
 class SelectVideoController extends GetxController {
-  final _picker = ImagePicker();
   final videoFile = Rxn<XFile>();
   final originalVideoFile = Rxn<XFile>();
   final videoPlayerController = Rxn<VideoPlayerController>();
@@ -22,6 +25,9 @@ class SelectVideoController extends GetxController {
   final videoWidth = Rxn<int>();
   final videoHeight = Rxn<int>();
   final videoDuration = Rxn<Duration>();
+  final selectedVideos = <SelectedVideoItem>[].obs;
+  final focusedItem = Rxn<SelectedVideoItem>();
+  final isPickingVideos = false.obs;
 
   @override
   void onInit() {
@@ -77,6 +83,13 @@ class SelectVideoController extends GetxController {
         videoWidth.value = controller.value.size.width.toInt();
         videoHeight.value = controller.value.size.height.toInt();
         isVideoSelected.value = true;
+        final item = focusedItem.value;
+        if (item != null && item.file.path == file.path) {
+          item.width = videoWidth.value!;
+          item.height = videoHeight.value!;
+          item.duration = videoDuration.value!;
+          selectedVideos.refresh();
+        }
       } else {
         await controller.dispose();
       }
@@ -105,6 +118,10 @@ class SelectVideoController extends GetxController {
   }
 
   Future<void> selectOtherVideo() async {
+    await pickVideo();
+  }
+
+  Future<void> _clearFocusedVideo() async {
     isVideoSelected.value = false;
     videoFile.value = null;
     originalVideoFile.value = null;
@@ -137,6 +154,8 @@ class SelectVideoController extends GetxController {
           // 회전된 파일로 교체
           final rotatedFile = XFile(rotatedFilePath);
           videoFile.value = rotatedFile;
+          focusedItem.value?.file = rotatedFile;
+          selectedVideos.refresh();
           isTrimmed.value = false; // 회전 후에는 trim 상태 초기화
           _initVideoPlayer(rotatedFile);
 
@@ -158,6 +177,8 @@ class SelectVideoController extends GetxController {
 
     try {
       videoFile.value = originalVideoFile.value;
+      focusedItem.value?.file = originalVideoFile.value!;
+      selectedVideos.refresh();
       isTrimmed.value = false;
       await _initVideoPlayer(originalVideoFile.value!);
       Get.snackbar('Success', 'Original video restored');
@@ -271,6 +292,8 @@ class SelectVideoController extends GetxController {
       // Trim된 파일로 교체
       final trimmedFile = XFile(result);
       videoFile.value = trimmedFile;
+      focusedItem.value?.file = trimmedFile;
+      selectedVideos.refresh();
       isTrimmed.value = true; // Trim 상태 업데이트
       await _initVideoPlayer(trimmedFile);
 
@@ -280,12 +303,46 @@ class SelectVideoController extends GetxController {
 
   Future<void> pickVideo() async {
     try {
-      final XFile? file = await _picker.pickVideo(source: ImageSource.gallery);
-      if (file != null) {
-        videoFile.value = file;
-        originalVideoFile.value = file; // 원본 파일 저장
-        isTrimmed.value = false; // Trim 상태 초기화
-        await _initVideoPlayer(file);
+      isPickingVideos.value = true;
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.video,
+        allowMultiple: true,
+      );
+      if (result == null) return;
+
+      final defaults = ConversionOptions.fromMap(await loadConvertSettings());
+      final existingPaths = selectedVideos
+          .map((item) => item.originalFile.path)
+          .toSet();
+      final added = <SelectedVideoItem>[];
+
+      for (final picked in result.files) {
+        final path = picked.path;
+        if (path == null || existingPaths.contains(path)) continue;
+        final file = XFile(path, name: picked.name);
+        final metadataController = VideoPlayerController.file(File(path));
+        try {
+          await metadataController.initialize();
+          added.add(
+            SelectedVideoItem(
+              id: '${DateTime.now().microsecondsSinceEpoch}_${added.length}',
+              originalFile: file,
+              file: file,
+              width: metadataController.value.size.width.toInt(),
+              height: metadataController.value.size.height.toInt(),
+              duration: metadataController.value.duration,
+              options: defaults,
+            ),
+          );
+          existingPaths.add(path);
+        } finally {
+          await metadataController.dispose();
+        }
+      }
+
+      selectedVideos.addAll(added);
+      if (focusedItem.value == null && selectedVideos.isNotEmpty) {
+        await focusVideo(selectedVideos.first);
       }
     } catch (e) {
       // 비디오 선택 실패 시 Crashlytics로 전송
@@ -303,8 +360,45 @@ class SelectVideoController extends GetxController {
       // CommonSnackBar.error(
       //     'error'.tr, 'An error occurred while selecting the video.'.tr);
       print('Error picking video: $e');
-      isVideoSelected.value = false;
+    } finally {
+      isPickingVideos.value = false;
     }
+  }
+
+  Future<void> focusVideo(SelectedVideoItem item) async {
+    focusedItem.value = item;
+    videoFile.value = item.file;
+    originalVideoFile.value = item.originalFile;
+    isTrimmed.value = item.file.path != item.originalFile.path;
+    await _initVideoPlayer(item.file);
+  }
+
+  Future<void> removeVideo(SelectedVideoItem item) async {
+    final wasFocused = focusedItem.value?.id == item.id;
+    selectedVideos.removeWhere((candidate) => candidate.id == item.id);
+    if (!wasFocused) return;
+    await _clearFocusedVideo();
+    if (selectedVideos.isNotEmpty) await focusVideo(selectedVideos.first);
+  }
+
+  void showItemOptions(BuildContext context, SelectedVideoItem item) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ConvertOptionsDialog(
+        originalWidth: item.width,
+        originalHeight: item.height,
+        videoDurationSeconds: item.duration.inSeconds,
+        videoFilePath: item.file.path,
+        savedSettings: item.options.toMap(),
+        submitText: 'Apply',
+        onConvert: (options) async {
+          item.options = ConversionOptions.fromMap(options);
+          selectedVideos.refresh();
+        },
+      ),
+    );
   }
 
   void convertVideo() {
@@ -320,8 +414,8 @@ class SelectVideoController extends GetxController {
     final videoDurationSeconds = videoDuration.value?.inSeconds ?? 0;
     final videoFilePath = videoFile.value!.path;
 
-    // 저장된 설정 불러오기
-    final savedSettings = await loadConvertSettings();
+    final savedSettings =
+        focusedItem.value?.options.toMap() ?? await loadConvertSettings();
 
     showModalBottomSheet(
       context: context,
@@ -361,8 +455,41 @@ class SelectVideoController extends GetxController {
         selectedFormat: options['selectedFormat'], // selectedFormat 추가
       );
 
-      // LoadingView로 이동
-      Get.toNamed(Routes.LOADING);
+      final file = videoFile.value;
+      if (file == null) {
+        throw Exception('No video selected');
+      }
+
+      final queue = Get.find<BatchConversionService>();
+      final item = focusedItem.value;
+      if (item != null) item.options = ConversionOptions.fromMap(options);
+      queue.enqueue(
+        ConversionJob(
+          id: '${DateTime.now().microsecondsSinceEpoch}',
+          inputPath: file.path,
+          fileName: file.name,
+          width: videoWidth.value ?? 0,
+          height: videoHeight.value ?? 0,
+          duration: videoDuration.value ?? Duration.zero,
+          options: ConversionOptions.fromMap(options),
+        ),
+      );
+
+      await Fluttertoast.showToast(
+        msg:
+            '${'starting_conversion'.tr}\n${file.name} · ${options['selectedFormat']}',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: const Color(0xE629333D),
+        textColor: Colors.white,
+        fontSize: 14,
+      );
+
+      if (item != null) {
+        await removeVideo(item);
+      } else {
+        await _clearFocusedVideo();
+      }
     } catch (e) {
       // 변환 시작 실패 시 Crashlytics로 전송
       FirebaseCrashlytics.instance.recordError(
@@ -382,5 +509,33 @@ class SelectVideoController extends GetxController {
 
       Get.snackbar('Error', 'Failed to start conversion: $e');
     }
+  }
+
+  Future<void> enqueueAllVideos() async {
+    if (selectedVideos.isEmpty) return;
+    final items = List<SelectedVideoItem>.from(selectedVideos);
+    final queue = Get.find<BatchConversionService>();
+    for (final item in items) {
+      queue.enqueue(
+        ConversionJob(
+          id: '${DateTime.now().microsecondsSinceEpoch}_${item.id}',
+          inputPath: item.file.path,
+          fileName: item.file.name,
+          width: item.width,
+          height: item.height,
+          duration: item.duration,
+          options: item.options,
+        ),
+      );
+    }
+    await Fluttertoast.showToast(
+      msg: '${items.length} videos added to conversion queue',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: const Color(0xE629333D),
+      textColor: Colors.white,
+    );
+    selectedVideos.clear();
+    await _clearFocusedVideo();
   }
 }

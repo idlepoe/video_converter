@@ -23,6 +23,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   device_info_plus: ^12.1.0
   firebase_crashlytics: ^5.0.3
+  fluttertoast: ^9.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

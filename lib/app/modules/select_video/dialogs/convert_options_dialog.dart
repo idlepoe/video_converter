@@ -10,6 +10,7 @@ class ConvertOptionsDialog extends StatefulWidget {
   final String videoFilePath;
   final Map<String, dynamic> savedSettings;
   final Function(Map<String, dynamic>) onConvert;
+  final String? submitText;
 
   const ConvertOptionsDialog({
     super.key,
@@ -19,6 +20,7 @@ class ConvertOptionsDialog extends StatefulWidget {
     required this.videoFilePath,
     required this.savedSettings,
     required this.onConvert,
+    this.submitText,
   });
 
   @override
@@ -133,7 +135,7 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
                         Navigator.pop(context); // bottomSheet 먼저 닫기
                         await _saveSettings();
                       },
-                      text: 'convert'.tr,
+                      text: widget.submitText ?? 'convert'.tr,
                     ),
                   ),
                 ],
