@@ -5,8 +5,10 @@ const Map<String, String> enTranslations = {
   'select_video_file': 'Select Video File',
   'tap_to_select_video': 'Tap to select a video',
   'convert': 'Convert',
+  'convert_video_count': 'Convert @count videos',
   'cancel': 'Cancel',
   'go_back': 'Go Back',
+  'press_back_again_to_exit': 'Press back again to exit',
   'other_video': 'Other Video',
 
   // Video Settings

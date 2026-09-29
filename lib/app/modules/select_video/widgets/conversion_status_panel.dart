@@ -14,52 +14,57 @@ class ConversionStatusPanel extends GetView<BatchConversionService> {
       if (controller.jobs.isEmpty) return const SizedBox.shrink();
       final current = controller.currentJob.value;
       final progress = controller.overallProgress;
+      final finishedCount = controller.completedCount + controller.failedCount;
+      final hasFailure = controller.failedCount > 0;
       return Material(
         color: const Color(0xFFEFF6FF),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 8, 10),
+          padding: const EdgeInsets.fromLTRB(12, 6, 4, 5),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(
                 children: [
                   Icon(
-                    controller.isProcessing.value ? Icons.sync : Icons.task_alt,
+                    controller.isProcessing.value
+                        ? Icons.sync
+                        : hasFailure
+                        ? Icons.error_outline
+                        : Icons.task_alt,
+                    size: 20,
                     color: const Color(0xFF3182F6),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          current == null
-                              ? '${'conversion_complete'.tr} · ${controller.completedCount}/${controller.jobs.length}'
-                              : current.statusMessage.value.tr,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontWeight: FontWeight.w700),
-                        ),
-                        if (current != null)
-                          Text(
-                            '${current.fileName} · ${controller.queuedCount} waiting',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Color(0xFF4E5968),
-                              fontSize: 12,
-                            ),
-                          ),
-                      ],
+                    child: Text(
+                      current == null
+                          ? '${'conversion_complete'.tr} · $finishedCount/${controller.jobs.length}'
+                          : '${current.statusMessage.value.tr} · $finishedCount/${controller.jobs.length}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '${(progress * 100).round()}%',
+                    style: const TextStyle(
+                      color: Color(0xFF4E5968),
+                      fontSize: 12,
                     ),
                   ),
                   if (current != null)
                     IconButton(
                       tooltip: 'cancel'.tr,
                       onPressed: controller.cancelCurrent,
-                      icon: const Icon(Icons.stop_circle_outlined),
+                      visualDensity: VisualDensity.compact,
+                      icon: const Icon(Icons.stop_circle_outlined, size: 20),
                     ),
                   PopupMenuButton<String>(
+                    padding: EdgeInsets.zero,
+                    iconSize: 20,
                     onSelected: (value) {
                       if (value == 'clear') controller.clearFinished();
                       if (value == 'results') _showJobs(context);
@@ -74,17 +79,12 @@ class ConversionStatusPanel extends GetView<BatchConversionService> {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
-              LinearProgressIndicator(value: progress),
-              const SizedBox(height: 4),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  '${(progress * 100).round()}% · ✓ ${controller.completedCount} · ! ${controller.failedCount}',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF4E5968),
-                  ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 3,
+                  backgroundColor: const Color(0xFFD7E7FB),
                 ),
               ),
             ],

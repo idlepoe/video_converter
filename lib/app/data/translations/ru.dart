@@ -5,8 +5,10 @@ const Map<String, String> ruTranslations = {
   'select_video_file': 'Выбрать Видео Файл',
   'tap_to_select_video': 'Нажмите, чтобы выбрать видео',
   'convert': 'Конвертировать',
+  'convert_video_count': 'Конвертировать видео: @count',
   'cancel': 'Отмена',
   'go_back': 'Назад',
+  'press_back_again_to_exit': 'Нажмите назад ещё раз для выхода',
   'other_video': 'Другое Видео',
 
   // Video Settings

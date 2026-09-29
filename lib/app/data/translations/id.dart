@@ -5,8 +5,10 @@ const Map<String, String> idTranslations = {
   'select_video_file': 'Pilih File Video',
   'tap_to_select_video': 'Ketuk untuk memilih video',
   'convert': 'Konversi',
+  'convert_video_count': 'Konversi @count video',
   'cancel': 'Batal',
   'go_back': 'Kembali',
+  'press_back_again_to_exit': 'Tekan kembali sekali lagi untuk keluar',
   'other_video': 'Video Lain',
 
   // Video Settings

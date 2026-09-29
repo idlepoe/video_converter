@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:video_converter/app/models/conversion_job.dart';
 import 'package:video_converter/app/services/batch_conversion_service.dart';
@@ -9,11 +10,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:video_converter/app/models/selected_video_item.dart';
 import '../widgets/video_rotate_screen.dart';
 import '../widgets/video_trim_screen.dart';
 import '../dialogs/convert_options_dialog.dart';
+import '../widgets/video_gallery_picker_screen.dart';
 
 class SelectVideoController extends GetxController {
   final videoFile = Rxn<XFile>();
@@ -28,11 +30,46 @@ class SelectVideoController extends GetxController {
   final selectedVideos = <SelectedVideoItem>[].obs;
   final focusedItem = Rxn<SelectedVideoItem>();
   final isPickingVideos = false.obs;
+  final defaultOptions = const ConversionOptions(
+    selectedResolution: 0,
+    fps: 30,
+    quality: 75,
+    speed: 1,
+    format: 'WebP',
+  ).obs;
+  DateTime? _lastBackPressedAt;
+
+  Future<void> handleBackPressed() async {
+    final now = DateTime.now();
+    final shouldExit =
+        _lastBackPressedAt != null &&
+        now.difference(_lastBackPressedAt!) <= const Duration(seconds: 2);
+    if (shouldExit) {
+      await SystemNavigator.pop();
+      return;
+    }
+    _lastBackPressedAt = now;
+    await Fluttertoast.showToast(
+      msg: 'press_back_again_to_exit'.tr,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: const Color(0xE629333D),
+      textColor: Colors.white,
+      fontSize: 14,
+    );
+  }
 
   @override
   void onInit() {
     super.onInit();
+    _loadDefaultOptions();
     _checkForUpdate();
+  }
+
+  Future<void> _loadDefaultOptions() async {
+    defaultOptions.value = ConversionOptions.fromMap(
+      await loadConvertSettings(),
+    );
   }
 
   Future<void> _checkForUpdate() async {
@@ -304,45 +341,50 @@ class SelectVideoController extends GetxController {
   Future<void> pickVideo() async {
     try {
       isPickingVideos.value = true;
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.video,
-        allowMultiple: true,
+      final result = await Get.to<List<AssetEntity>>(
+        () => const VideoGalleryPickerScreen(),
       );
-      if (result == null) return;
+      if (result == null || result.isEmpty) return;
 
+      // Always reload the persisted options before creating queue items. This
+      // avoids using the in-memory WebP fallback when the gallery is opened
+      // before the asynchronous settings initialization has completed.
       final defaults = ConversionOptions.fromMap(await loadConvertSettings());
-      final existingPaths = selectedVideos
-          .map((item) => item.originalFile.path)
-          .toSet();
+      defaultOptions.value = defaults;
+      final existingIds = selectedVideos.map((item) => item.id).toSet();
       final added = <SelectedVideoItem>[];
 
-      for (final picked in result.files) {
-        final path = picked.path;
-        if (path == null || existingPaths.contains(path)) continue;
-        final file = XFile(path, name: picked.name);
-        final metadataController = VideoPlayerController.file(File(path));
-        try {
-          await metadataController.initialize();
-          added.add(
-            SelectedVideoItem(
-              id: '${DateTime.now().microsecondsSinceEpoch}_${added.length}',
-              originalFile: file,
-              file: file,
-              width: metadataController.value.size.width.toInt(),
-              height: metadataController.value.size.height.toInt(),
-              duration: metadataController.value.duration,
-              options: defaults,
-            ),
-          );
-          existingPaths.add(path);
-        } finally {
-          await metadataController.dispose();
-        }
+      for (final asset in result) {
+        if (existingIds.contains(asset.id)) continue;
+        final source = await asset.file;
+        if (source == null) continue;
+        final thumbnail = await asset.thumbnailDataWithSize(
+          const ThumbnailSize.square(240),
+          quality: 75,
+        );
+        final name = source.path.split(Platform.pathSeparator).last;
+        final file = XFile(source.path, name: name);
+        added.add(
+          SelectedVideoItem(
+            id: asset.id,
+            originalFile: file,
+            file: file,
+            width: asset.width,
+            height: asset.height,
+            duration: Duration(seconds: asset.duration),
+            options: defaults,
+            thumbnailData: thumbnail,
+          ),
+        );
+        existingIds.add(asset.id);
       }
 
       selectedVideos.addAll(added);
-      if (focusedItem.value == null && selectedVideos.isNotEmpty) {
-        await focusVideo(selectedVideos.first);
+      if (added.isNotEmpty) {
+        // A newly selected batch always starts from its first item. This also
+        // repairs a stale focus left behind while a previous queue was being
+        // cleared asynchronously.
+        await focusVideo(added.first);
       }
     } catch (e) {
       // 비디오 선택 실패 시 Crashlytics로 전송
@@ -353,7 +395,7 @@ class SelectVideoController extends GetxController {
         information: [
           'Error Type: ${e.runtimeType}',
           'Error Message: ${e.toString()}',
-          'Picker Source: ImageSource.gallery',
+          'Picker Source: In-app video gallery',
         ],
       );
 
@@ -381,23 +423,80 @@ class SelectVideoController extends GetxController {
     if (selectedVideos.isNotEmpty) await focusVideo(selectedVideos.first);
   }
 
-  void showItemOptions(BuildContext context, SelectedVideoItem item) {
+  void showBatchOptions(BuildContext context) {
+    final reference =
+        focusedItem.value ??
+        (selectedVideos.isNotEmpty ? selectedVideos.first : null);
+    if (reference == null) return;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => ConvertOptionsDialog(
-        originalWidth: item.width,
-        originalHeight: item.height,
-        videoDurationSeconds: item.duration.inSeconds,
-        videoFilePath: item.file.path,
-        savedSettings: item.options.toMap(),
-        submitText: 'Apply',
+        originalWidth: reference.width,
+        originalHeight: reference.height,
+        videoDurationSeconds: reference.duration.inSeconds,
+        videoFilePath: reference.file.path,
+        savedSettings: defaultOptions.value.toMap(),
+        submitText: 'Apply to all',
         onConvert: (options) async {
-          item.options = ConversionOptions.fromMap(options);
+          final converted = ConversionOptions.fromMap(options);
+          defaultOptions.value = converted;
+          for (final item in selectedVideos) {
+            item.options = converted;
+          }
           selectedVideos.refresh();
+          await _persistDefaultOptions(converted);
+          await Fluttertoast.showToast(
+            msg: 'Options applied to ${selectedVideos.length} videos',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+          );
         },
       ),
+    );
+  }
+
+  Future<void> applyPreset(String preset) async {
+    final options = switch (preset) {
+      'high' => const ConversionOptions(
+        selectedResolution: 0,
+        fps: 30,
+        quality: 90,
+        speed: 1,
+        format: 'MP4',
+      ),
+      'compact' => const ConversionOptions(
+        selectedResolution: 1,
+        fps: 24,
+        quality: 65,
+        speed: 1,
+        format: 'MP4',
+      ),
+      _ => const ConversionOptions(
+        selectedResolution: 2,
+        fps: 15,
+        quality: 75,
+        speed: 1,
+        format: 'WebP',
+      ),
+    };
+    defaultOptions.value = options;
+    for (final item in selectedVideos) {
+      item.options = options;
+    }
+    selectedVideos.refresh();
+    await _persistDefaultOptions(options);
+  }
+
+  Future<void> _persistDefaultOptions(ConversionOptions options) {
+    return saveConvertSettings(
+      selectedResolution: options.selectedResolution,
+      fps: options.fps,
+      quality: options.quality,
+      format: options.format.toLowerCase(),
+      speed: options.speed,
+      selectedFormat: options.format,
     );
   }
 

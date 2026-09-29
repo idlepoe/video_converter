@@ -5,8 +5,10 @@ const Map<String, String> zhTranslations = {
   'select_video_file': '选择视频文件',
   'tap_to_select_video': '点击选择视频',
   'convert': '转换',
+  'convert_video_count': '转换 @count 个视频',
   'cancel': '取消',
   'go_back': '返回',
+  'press_back_again_to_exit': '再次按返回键退出',
   'other_video': '其他视频',
 
   // Video Settings

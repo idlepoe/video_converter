@@ -5,8 +5,10 @@ const Map<String, String> hiTranslations = {
   'select_video_file': 'वीडियो फ़ाइल चुनें',
   'tap_to_select_video': 'वीडियो चुनने के लिए टैप करें',
   'convert': 'कन्वर्ट करें',
+  'convert_video_count': '@count वीडियो कन्वर्ट करें',
   'cancel': 'रद्द करें',
   'go_back': 'वापस जाएं',
+  'press_back_again_to_exit': 'बाहर निकलने के लिए फिर से वापस दबाएं',
   'other_video': 'अन्य वीडियो',
 
   // Video Settings

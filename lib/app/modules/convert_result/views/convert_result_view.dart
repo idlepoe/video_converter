@@ -247,33 +247,6 @@ class ConvertResultView extends GetView<ConvertResultController> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // 다른 비디오 변환
-                          Get.offAllNamed('/select-video');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-
-                          elevation: 0,
-                        ),
-                        child: Text(
-                          'convert_another'.tr,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ],

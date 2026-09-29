@@ -1,26 +1,192 @@
-# WebpConverter
+# WebP 변환기
 
-## Play Store Information
+Android 기기에서 비디오를 WebP 또는 여러 동영상 형식으로 변환하는 Flutter 앱입니다. 파일은 외부 변환 서버로 전송하지 않고 기기에서 FFmpeg로 처리합니다.
 
-### App Name (30 characters max)
-WebpConverter
+## 주요 기능
 
-### Short Description (80 characters max)
-Convert videos to WebP with privacy protection. Support 6 formats & 8 languages.
+### 자동 재생 비디오 갤러리
 
-### Long Description (1000 characters max)
-Transform your videos effortlessly with WebpConverter! Convert between WebP, MP4, MKV, AVI, FLV, and MOV formats while keeping your data completely private.
+- Android 기본 파일 선택기 대신 앱 내부 비디오 갤러리를 제공합니다.
+- 현재 그룹의 영상이 음소거 상태로 자동 반복 재생됩니다.
+- 재생 영역을 위아래로 스와이프하거나 하단 썸네일을 눌러 그룹을 이동할 수 있습니다.
+- 재생 화면과 하단 썸네일에서 영상을 선택하거나 선택을 해제할 수 있습니다.
+- 선택된 영상에는 파란색 테두리와 선택 순서가 표시됩니다.
+- 동시 재생 개수는 `1, 2, 4, 6, 8, 10, 12개` 중에서 선택할 수 있으며 기본값은 1개입니다.
+- 재생 그리드 열 수는 1~6열로 조절할 수 있습니다.
+- 동시 재생 개수와 그리드 설정은 기기에 저장됩니다.
+- 화면에 표시되지 않는 그룹은 정적 썸네일만 유지하여 디코더와 메모리 사용량을 줄입니다.
 
-**Key Features:**
-• Convert videos to 6 popular formats including WebP
-• Rotate and trim videos with precision
-• Adjust quality, resolution, FPS, and playback speed
-• Complete privacy protection - all processing happens locally
-• Support for 8 languages: English, Spanish, Hindi, Indonesian, Japanese, Korean, Russian, and Chinese
-• Save converted videos directly to your gallery
-• User-friendly interface with real-time progress
+### 다중 선택과 배치 변환
 
-**Privacy First:**
-Your videos never leave your device. All conversion happens locally, ensuring your personal content stays secure and private.
+- 여러 비디오를 한 번에 선택할 수 있습니다.
+- 선택한 영상은 메인 화면 상단의 간결한 썸네일 목록으로 표시됩니다.
+- 첫 번째로 선택한 영상이 기본 편집·변환 화면에 표시됩니다.
+- 썸네일을 누르면 편집할 영상을 변경할 수 있습니다.
+- 여러 영상을 한 번에 변환 큐에 등록할 수 있습니다.
+- 변환 작업은 안정성을 위해 순차적으로 처리됩니다.
+- 변환 중에도 새 영상을 선택하여 다음 작업을 준비할 수 있습니다.
 
-Perfect for content creators, social media enthusiasts, and anyone who needs reliable video conversion with complete privacy protection. Download now!
+### 변환 옵션
+
+각 영상은 큐에 등록될 때 독립적인 변환 옵션을 보관합니다.
+
+- 출력 형식: WebP, MP4, MKV, AVI, FLV, MOV
+- 해상도: 원본, 720p, 480p, 320p
+- FPS
+- 품질
+- 재생 속도
+- 일괄 설정 적용
+- 고화질 MP4, 용량 절약 MP4, WebP 프리셋
+- 마지막으로 사용한 옵션 저장
+
+WebP 형식은 오디오 스트림을 지원하지 않으므로 변환할 때 오디오가 자동으로 제외됩니다.
+
+### 편집 기능
+
+- 비디오 회전
+- 구간 자르기
+- 편집한 파일을 변환 큐에 등록
+
+### 변환 큐와 상태 표시
+
+- 화면 상단에 현재 단계, 완료 개수, 전체 진행률을 compact 상태 바로 표시합니다.
+- 대기, 준비, 변환, 갤러리 저장, 완료, 실패, 취소 상태를 구분합니다.
+- 현재 작업 취소
+- 대기 작업 취소
+- 실패하거나 취소된 작업 재시도
+- 완료한 결과 목록 확인 및 정리
+- 변환 완료 알림과 실패 알림
+- FFmpeg 실패 시 반환 코드, 실행 명령, 원문 로그 기록
+
+메인 화면은 다음 우선순위로 표시됩니다.
+
+1. 선택된 파일이 있으면 첫 번째 파일의 편집·변환 화면
+2. 선택된 파일이 없으면 변환 큐 상태와 관계없이 파일 선택 화면
+
+변환 진행 및 완료 상태 때문에 메인 콘텐츠가 전용 화면으로 전환되지 않습니다. 사용자는 상단 compact 상태 바에서 진행 상황을 확인하면서 계속 다른 영상을 선택할 수 있습니다. 완료 결과 항목을 직접 선택하면 결과 미리보기, 파일 정보, 갤러리에서 보기 기능을 확인할 수 있습니다.
+
+### 기타
+
+- 변환 결과를 기기 갤러리에 저장
+- 앱을 종료할 때 뒤로 가기를 한 번 더 눌러야 종료되는 보호 동작
+- 기본 Material 보라색 대신 파란색 앱 테마 사용
+- 영어, 스페인어, 힌디어, 인도네시아어, 일본어, 한국어, 러시아어, 중국어 지원
+- Firebase Crashlytics 오류 수집
+
+## 사용 방법
+
+1. 메인 화면에서 비디오 선택 영역 또는 `+` 버튼을 누릅니다.
+2. 자동 재생 갤러리에서 변환할 영상을 선택합니다.
+3. `Done`을 눌러 선택을 완료합니다.
+4. 필요한 경우 상단 설정 버튼에서 전체 변환 옵션이나 프리셋을 적용합니다.
+5. 개별 영상을 눌러 미리보기를 확인하거나 회전·자르기를 적용합니다.
+6. 하단의 `N개 영상 변환` 버튼을 누릅니다.
+7. 상단 compact 상태 바에서 진행 상태를 확인합니다.
+8. 완료된 항목을 눌러 결과를 확인하거나 갤러리에서 엽니다.
+
+## 권한과 개인정보 보호
+
+Android 버전에 따라 다음 권한을 사용합니다.
+
+- Android 13 이상: `READ_MEDIA_VIDEO`
+- Android 12 이하: `READ_EXTERNAL_STORAGE`
+- 갤러리 저장을 위한 저장소 접근
+- 변환 완료 및 실패 알림
+- 변환 중 기기 절전을 방지하기 위한 Wake Lock
+
+영상 파일은 기기 내부에서 처리됩니다. Firebase Crashlytics와 앱 업데이트 확인 기능 때문에 인터넷 권한이 포함되어 있지만, 변환할 영상 자체를 외부 변환 서버에 업로드하지 않습니다.
+
+## 개발 환경
+
+- Flutter / Dart 3.9 이상
+- Gradle 8.12
+- JDK 21 권장
+- Android SDK 및 연결된 Android 기기 또는 에뮬레이터
+
+Gradle 8.12는 Java 25를 지원하지 않습니다. 빌드 JVM은 Java 8~23 범위여야 하며 이 프로젝트에서는 JDK 21을 권장합니다.
+
+환경 확인:
+
+```powershell
+flutter doctor
+flutter config --jdk-dir "C:\Program Files\Eclipse Adoptium\jdk-21.0.12.101-hotspot"
+java --version
+```
+
+## 실행 및 빌드
+
+```powershell
+# 의존성 설치
+flutter pub get
+
+# 연결 기기에서 디버그 실행
+flutter run
+
+# 정적 검사와 테스트
+flutter analyze
+flutter test
+
+# 릴리스 APK 빌드
+flutter build apk --release
+```
+
+릴리스 APK 생성 위치:
+
+```text
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+## 릴리스 서명
+
+`android/key.properties`가 존재하면 지정된 릴리스 키로 서명합니다.
+
+```properties
+storePassword=...
+keyPassword=...
+keyAlias=...
+storeFile=app/key.jks
+```
+
+`key.properties`가 없는 로컬 환경에서는 설치 가능한 APK를 만들기 위해 디버그 키를 사용합니다. 실제 배포 빌드에는 반드시 안전하게 보관된 릴리스 키를 사용해야 합니다. 키 파일과 비밀번호는 저장소에 커밋하지 마세요.
+
+## 주요 기술 구성
+
+- Flutter
+- GetX: 화면 이동, 상태 및 서비스 관리
+- FFmpegKit: 비디오 변환
+- photo_manager: 기기 비디오 조회 및 썸네일
+- video_player: 갤러리 자동 재생과 미리보기
+- SharedPreferences: 갤러리와 변환 기본 설정 저장
+- gallery_saver_plus: 변환 결과 갤러리 저장
+- flutter_local_notifications: 완료 및 실패 알림
+- Firebase Crashlytics: 오류 수집
+
+주요 코드 위치:
+
+```text
+lib/app/modules/select_video/          선택, 갤러리, 편집, 메인 화면
+lib/app/modules/convert_result/        변환 결과 화면
+lib/app/services/batch_conversion_service.dart
+                                       순차 변환 큐와 FFmpeg 실행
+lib/app/services/android_version_handler.dart
+                                       FFmpeg 명령 생성과 Android 대응
+lib/app/models/conversion_job.dart     작업 상태와 변환 옵션 모델
+lib/app/data/translations/             8개 언어 문자열
+```
+
+## 최근 변경 사항
+
+- 네이티브 비디오 선택기를 자동 재생 갤러리로 교체
+- 복수 영상 선택 및 배치 변환 추가
+- 영상별 독립 변환 옵션과 일괄 프리셋 추가
+- 변환 중에도 다른 영상을 선택할 수 있는 백그라운드 큐 구성
+- 전체 화면 로딩 화면을 제거하고 상단 compact 진행 상태 바 추가
+- 변환 진행·완료 전용 화면을 제거하고 상단 상태 바로 통합
+- 선택된 첫 번째 영상을 기본 변환 화면으로 표시
+- 중복된 선택 및 전체 변환 버튼 제거
+- 결과 화면에서 `다른 비디오 변환` 버튼 제거
+- 공백이 포함된 Android 파일 경로의 FFmpeg 인자 처리 수정
+- WebP 변환 시 오디오 스트림 제외
+- FFmpeg 상세 실패 로그 추가
+- 두 번 뒤로 가기 종료 동작 추가
+- 앱 전체 색상을 파란색 테마로 통일

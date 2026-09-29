@@ -5,8 +5,10 @@ const Map<String, String> koTranslations = {
   'select_video_file': '비디오 파일 선택',
   'tap_to_select_video': '비디오를 선택하려면 탭하세요',
   'convert': '변환',
+  'convert_video_count': '@count개 영상 변환',
   'cancel': '취소',
   'go_back': '뒤로 가기',
+  'press_back_again_to_exit': '뒤로 가기를 한 번 더 누르면 종료됩니다',
   'other_video': '다른 비디오',
 
   // Video Settings

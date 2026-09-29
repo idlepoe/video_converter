@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:image_picker/image_picker.dart';
 
 import 'conversion_job.dart';
@@ -11,6 +13,7 @@ class SelectedVideoItem {
     required this.height,
     required this.duration,
     required this.options,
+    this.thumbnailData,
   });
 
   final String id;
@@ -20,4 +23,5 @@ class SelectedVideoItem {
   int height;
   Duration duration;
   ConversionOptions options;
+  final Uint8List? thumbnailData;
 }

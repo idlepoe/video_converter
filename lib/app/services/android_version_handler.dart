@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 /// Android 버전별 FFmpeg 처리 분기를 담당하는 유틸리티 클래스
@@ -57,6 +58,17 @@ class AndroidVersionHandler {
           '-f lavfi -i testsrc=duration=1:size=320x240:rate=1 -f null -';
       final session = await FFmpegKit.execute(testCommand);
       final returnCode = await session.getReturnCode();
+      if (!ReturnCode.isSuccess(returnCode)) {
+        final logs = await session.getAllLogsAsString() ?? '';
+        final failStackTrace = await session.getFailStackTrace();
+        debugPrint(
+          '[VideoConversion] FFmpeg capability check failed\n'
+          'returnCode: ${returnCode?.getValue() ?? 'null'}\n'
+          'command: $testCommand\n'
+          'ffmpegLogs:\n$logs\n'
+          'failStackTrace:\n${failStackTrace ?? ''}',
+        );
+      }
       return ReturnCode.isSuccess(returnCode);
     } catch (e) {
       print('FFmpeg capability check failed: $e');
@@ -228,7 +240,7 @@ class AndroidVersionHandler {
 
     String command = '-i $inputPath';
     command += ' -c:v $videoCodec';
-    command += ' -c:a $audioCodec';
+    command += format == 'WebP' ? ' -an' : ' -c:a $audioCodec';
     command += ' -r $fps';
     command += ' -s ${width}x$height';
 
@@ -266,7 +278,7 @@ class AndroidVersionHandler {
 
     String command = '-i $inputPath';
     command += ' -c:v $videoCodec';
-    command += ' -c:a $audioCodec';
+    command += format == 'WebP' ? ' -an' : ' -c:a $audioCodec';
     command += ' -r $fps';
     command += ' -s ${width}x$height';
 
@@ -304,7 +316,7 @@ class AndroidVersionHandler {
 
     String command = '-i $inputPath';
     command += ' -c:v $videoCodec';
-    command += ' -c:a $audioCodec';
+    command += format == 'WebP' ? ' -an' : ' -c:a $audioCodec';
     command += ' -r $fps';
     command += ' -s ${width}x$height';
 
@@ -380,13 +392,8 @@ class AndroidVersionHandler {
 
   /// 파일 경로 이스케이프 처리
   String _escapePath(String path) {
-    return path
-        .replaceAll(' ', '\\ ')
-        .replaceAll('(', '\\(')
-        .replaceAll(')', '\\)')
-        .replaceAll('[', '\\[')
-        .replaceAll(']', '\\]')
-        .replaceAll('&', '\\&');
+    final escaped = path.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
+    return '"$escaped"';
   }
 
   /// 디바이스 정보 로깅

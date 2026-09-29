@@ -5,8 +5,10 @@ const Map<String, String> jaTranslations = {
   'select_video_file': 'ビデオファイルを選択',
   'tap_to_select_video': 'ビデオを選択するにはタップしてください',
   'convert': '変換',
+  'convert_video_count': '@count本の動画を変換',
   'cancel': 'キャンセル',
   'go_back': '戻る',
+  'press_back_again_to_exit': 'もう一度戻るを押すと終了します',
   'other_video': '他のビデオ',
 
   // Video Settings

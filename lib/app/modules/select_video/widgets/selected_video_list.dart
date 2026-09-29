@@ -20,27 +20,45 @@ class SelectedVideoList extends GetView<SelectVideoController> {
             Row(
               children: [
                 Text(
-                  '${controller.selectedVideos.length} videos selected',
+                  '${controller.selectedVideos.length}',
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
                 const Spacer(),
-                TextButton.icon(
+                IconButton(
                   onPressed: controller.isPickingVideos.value
                       ? null
                       : controller.pickVideo,
                   icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Add'),
+                  tooltip: 'Add videos',
                 ),
-                FilledButton.icon(
-                  onPressed: controller.enqueueAllVideos,
-                  icon: const Icon(Icons.playlist_add_check, size: 18),
-                  label: const Text('Convert all'),
+                PopupMenuButton<String>(
+                  tooltip: 'Apply settings to all',
+                  icon: const Icon(Icons.tune, size: 20),
+                  onSelected: (value) {
+                    if (value == 'custom') {
+                      controller.showBatchOptions(context);
+                    } else {
+                      controller.applyPreset(value);
+                    }
+                  },
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(
+                      value: 'custom',
+                      child: Text('Custom settings…'),
+                    ),
+                    PopupMenuDivider(),
+                    PopupMenuItem(
+                      value: 'high',
+                      child: Text('High quality MP4'),
+                    ),
+                    PopupMenuItem(value: 'compact', child: Text('Compact MP4')),
+                    PopupMenuItem(value: 'webp', child: Text('WebP preset')),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 6),
             SizedBox(
-              height: 76,
+              height: 72,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: controller.selectedVideos.length,
@@ -67,66 +85,60 @@ class _VideoCard extends GetView<SelectVideoController> {
   Widget build(BuildContext context) {
     return Obx(() {
       final focused = controller.focusedItem.value?.id == item.id;
-      return InkWell(
+      return GestureDetector(
         onTap: () => controller.focusVideo(item),
-        borderRadius: BorderRadius.circular(10),
         child: Container(
-          width: 210,
-          padding: const EdgeInsets.all(8),
+          width: 72,
           decoration: BoxDecoration(
-            color: focused ? const Color(0xFFEFF6FF) : const Color(0xFFF7F8FA),
-            borderRadius: BorderRadius.circular(10),
+            color: const Color(0xFFE5E8EB),
+            borderRadius: BorderRadius.circular(9),
             border: Border.all(
-              color: focused
-                  ? const Color(0xFF3182F6)
-                  : const Color(0xFFE5E8EB),
-              width: focused ? 2 : 1,
+              color: focused ? const Color(0xFF3182F6) : Colors.transparent,
+              width: 3,
             ),
           ),
-          child: Row(
+          clipBehavior: Clip.antiAlias,
+          child: Stack(
+            fit: StackFit.expand,
             children: [
-              const Icon(Icons.video_file, color: Color(0xFF3182F6)),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.file.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w600),
+              if (item.thumbnailData != null)
+                Image.memory(item.thumbnailData!, fit: BoxFit.cover)
+              else
+                const Icon(Icons.video_file, color: Color(0xFF3182F6)),
+              Positioned(
+                left: 3,
+                bottom: 3,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 2,
                     ),
-                    Text(
-                      '${item.options.format} · ${item.width}×${item.height}',
-                      maxLines: 1,
-                      style: const TextStyle(
-                        color: Color(0xFF6B7684),
-                        fontSize: 11,
-                      ),
+                    child: Text(
+                      item.options.format,
+                      style: const TextStyle(color: Colors.white, fontSize: 9),
                     ),
-                  ],
+                  ),
                 ),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  InkWell(
-                    onTap: () => controller.showItemOptions(context, item),
-                    child: const Padding(
-                      padding: EdgeInsets.all(3),
-                      child: Icon(Icons.tune, size: 18),
-                    ),
+              Positioned(
+                right: 1,
+                top: 1,
+                child: IconButton(
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints.tightFor(
+                    width: 28,
+                    height: 28,
                   ),
-                  InkWell(
-                    onTap: () => controller.removeVideo(item),
-                    child: const Padding(
-                      padding: EdgeInsets.all(3),
-                      child: Icon(Icons.close, size: 18),
-                    ),
-                  ),
-                ],
+                  style: IconButton.styleFrom(backgroundColor: Colors.black45),
+                  onPressed: () => controller.removeVideo(item),
+                  icon: const Icon(Icons.close, color: Colors.white, size: 16),
+                ),
               ),
             ],
           ),

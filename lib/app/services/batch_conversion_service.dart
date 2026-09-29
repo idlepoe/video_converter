@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:ffmpeg_kit_flutter_new/session.dart';
+import 'package:flutter/foundation.dart';
 import 'package:gallery_saver_plus/gallery_saver.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
@@ -153,7 +154,7 @@ class BatchConversionService extends GetxService {
 
       job.status.value = ConversionJobStatus.converting;
       job.statusMessage.value = 'converting';
-      final completer = Completer<bool>();
+      final completer = Completer<_FFmpegExecutionResult>();
       final expectedMilliseconds =
           (job.duration.inMilliseconds / job.options.speed).round();
 
@@ -161,8 +162,16 @@ class BatchConversionService extends GetxService {
         command,
         (session) async {
           final returnCode = await session.getReturnCode();
+          final logs = await session.getAllLogsAsString() ?? '';
+          final failStackTrace = await session.getFailStackTrace();
           if (!completer.isCompleted) {
-            completer.complete(ReturnCode.isSuccess(returnCode));
+            completer.complete(
+              _FFmpegExecutionResult(
+                returnCode: returnCode,
+                logs: logs,
+                failStackTrace: failStackTrace,
+              ),
+            );
           }
         },
         (_) {},
@@ -173,13 +182,21 @@ class BatchConversionService extends GetxService {
         },
       );
 
-      final succeeded = await completer.future;
+      final result = await completer.future;
       _currentSession = null;
       if (_cancelCurrentRequested) {
         await _deleteIfPresent(outputFile);
         return;
       }
-      if (!succeeded) throw Exception('FFmpeg conversion failed');
+      if (!ReturnCode.isSuccess(result.returnCode)) {
+        final diagnostic = _formatFailureDiagnostic(
+          job: job,
+          command: command,
+          result: result,
+        );
+        debugPrint(diagnostic);
+        throw Exception(diagnostic);
+      }
 
       job.status.value = ConversionJobStatus.saving;
       job.statusMessage.value = 'saving_to_gallery';
@@ -244,4 +261,45 @@ class BatchConversionService extends GetxService {
   Future<void> _deleteIfPresent(File file) async {
     if (await file.exists()) await file.delete();
   }
+
+  String _formatFailureDiagnostic({
+    required ConversionJob job,
+    required String command,
+    required _FFmpegExecutionResult result,
+  }) {
+    final buffer = StringBuffer()
+      ..writeln('[VideoConversion] FFmpeg conversion failed')
+      ..writeln('file: ${job.fileName}')
+      ..writeln('format: ${job.options.format}')
+      ..writeln(
+        'options: resolution=${job.options.selectedResolution}, '
+        'fps=${job.options.fps}, quality=${job.options.quality}, '
+        'speed=${job.options.speed}',
+      )
+      ..writeln('returnCode: ${result.returnCode?.getValue() ?? 'null'}')
+      ..writeln('command: $command');
+    if (result.logs.trim().isNotEmpty) {
+      buffer
+        ..writeln('ffmpegLogs:')
+        ..writeln(result.logs.trim());
+    }
+    if (result.failStackTrace?.trim().isNotEmpty == true) {
+      buffer
+        ..writeln('failStackTrace:')
+        ..writeln(result.failStackTrace!.trim());
+    }
+    return buffer.toString().trim();
+  }
+}
+
+class _FFmpegExecutionResult {
+  const _FFmpegExecutionResult({
+    required this.returnCode,
+    required this.logs,
+    required this.failStackTrace,
+  });
+
+  final ReturnCode? returnCode;
+  final String logs;
+  final String? failStackTrace;
 }

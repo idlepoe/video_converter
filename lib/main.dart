@@ -20,6 +20,22 @@ void main() async {
       translations: AppTranslations(),
       locale: Get.deviceLocale,
       fallbackLocale: Locale('en'),
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF3182F6),
+          brightness: Brightness.light,
+        ),
+        progressIndicatorTheme: const ProgressIndicatorThemeData(
+          color: Color(0xFF3182F6),
+          linearTrackColor: Color(0xFFE5E8EB),
+        ),
+        sliderTheme: const SliderThemeData(
+          activeTrackColor: Color(0xFF3182F6),
+          thumbColor: Color(0xFF3182F6),
+          overlayColor: Color(0x223182F6),
+        ),
+      ),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       debugShowCheckedModeBanner: false,

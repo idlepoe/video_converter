@@ -5,8 +5,10 @@ const Map<String, String> esTranslations = {
   'select_video_file': 'Seleccionar Archivo de Video',
   'tap_to_select_video': 'Toca para seleccionar un video',
   'convert': 'Convertir',
+  'convert_video_count': 'Convertir @count videos',
   'cancel': 'Cancelar',
   'go_back': 'Volver',
+  'press_back_again_to_exit': 'Pulsa atrás de nuevo para salir',
   'other_video': 'Otro Video',
 
   // Video Settings
