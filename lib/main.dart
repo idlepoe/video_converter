@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:media_kit/media_kit.dart';
 
 import 'package:get/get.dart';
 import 'package:video_converter/app/data/translations/app_translations.dart';
@@ -10,6 +11,7 @@ import 'app/routes/app_pages.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
 
   // 알림 서비스 초기화
   await NotificationService.initialize();

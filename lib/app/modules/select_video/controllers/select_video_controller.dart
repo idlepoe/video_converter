@@ -16,6 +16,7 @@ import '../widgets/video_rotate_screen.dart';
 import '../widgets/video_trim_screen.dart';
 import '../dialogs/convert_options_dialog.dart';
 import '../widgets/video_gallery_picker_screen.dart';
+import '../../editor/pages/video_editor_grounded_page.dart';
 
 class SelectVideoController extends GetxController {
   final videoFile = Rxn<XFile>();
@@ -156,6 +157,41 @@ class SelectVideoController extends GetxController {
 
   Future<void> selectOtherVideo() async {
     await pickVideo();
+  }
+
+  Future<void> openVideoEditor() async {
+    final item = focusedItem.value;
+    if (item == null) return;
+
+    try {
+      await videoPlayerController.value?.pause();
+      final exported = await Get.to<XFile>(
+        () => VideoEditorGroundedExamplePage(
+          initialFilePath: item.file.path,
+          onComplete: (result) => Get.back(result: result),
+        ),
+      );
+      if (exported == null) return;
+
+      item.file = exported;
+      await focusVideo(item);
+      item.width = videoWidth.value ?? item.width;
+      item.height = videoHeight.value ?? item.height;
+      item.duration = videoDuration.value ?? item.duration;
+      selectedVideos.refresh();
+    } catch (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(
+        error,
+        stackTrace,
+        reason: 'Integrated video editor failed',
+        information: ['Video path: ${item.file.path}'],
+      );
+      await Fluttertoast.showToast(
+        msg: 'Video editing failed: $error',
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+      );
+    }
   }
 
   Future<void> _clearFocusedVideo() async {

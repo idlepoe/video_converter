@@ -36,6 +36,7 @@ const Map<String, String> enTranslations = {
 
   // Video Actions
   'video_rotate': 'Video Rotate',
+  'edit_video': 'Edit Video',
   'video_trim': 'Video Trim',
 
   // Video Trim

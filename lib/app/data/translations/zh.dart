@@ -34,6 +34,7 @@ const Map<String, String> zhTranslations = {
 
   // Video Actions
   'video_rotate': '旋转视频',
+  'edit_video': '编辑视频',
   'video_trim': '修剪视频',
 
   // Video Trim

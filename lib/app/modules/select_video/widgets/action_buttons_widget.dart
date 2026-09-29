@@ -17,17 +17,9 @@ class ActionButtonsWidget extends GetView<SelectVideoController> {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: controller.openRotateScreen,
-                    icon: const Icon(Icons.rotate_right, size: 18),
-                    label: Text('video_rotate'.tr),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: controller.openTrimScreen,
-                    icon: const Icon(Icons.content_cut, size: 18),
-                    label: Text('video_trim'.tr),
+                    onPressed: controller.openVideoEditor,
+                    icon: const Icon(Icons.auto_fix_high_rounded, size: 19),
+                    label: Text('edit_video'.tr),
                   ),
                 ),
               ],

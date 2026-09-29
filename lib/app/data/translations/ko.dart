@@ -34,6 +34,7 @@ const Map<String, String> koTranslations = {
 
   // Video Actions
   'video_rotate': '비디오 회전',
+  'edit_video': '비디오 편집',
   'video_trim': '비디오 자르기',
 
   // Video Trim

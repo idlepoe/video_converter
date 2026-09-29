@@ -34,6 +34,7 @@ const Map<String, String> jaTranslations = {
 
   // Video Actions
   'video_rotate': 'ビデオ回転',
+  'edit_video': '動画を編集',
   'video_trim': 'ビデオトリム',
 
   // Video Trim

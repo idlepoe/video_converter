@@ -36,6 +36,7 @@ const Map<String, String> hiTranslations = {
 
   // Video Actions
   'video_rotate': 'वीडियो घुमाएं',
+  'edit_video': 'वीडियो संपादित करें',
   'video_trim': 'वीडियो ट्रिम करें',
 
   // Video Trim

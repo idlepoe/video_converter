@@ -36,6 +36,7 @@ const Map<String, String> esTranslations = {
 
   // Video Actions
   'video_rotate': 'Rotar Video',
+  'edit_video': 'Editar video',
   'video_trim': 'Recortar Video',
 
   // Video Trim

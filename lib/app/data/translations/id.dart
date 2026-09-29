@@ -36,6 +36,7 @@ const Map<String, String> idTranslations = {
 
   // Video Actions
   'video_rotate': 'Putar Video',
+  'edit_video': 'Edit video',
   'video_trim': 'Potong Video',
 
   // Video Trim

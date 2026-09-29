@@ -36,6 +36,7 @@ const Map<String, String> ruTranslations = {
 
   // Video Actions
   'video_rotate': 'Повернуть Видео',
+  'edit_video': 'Редактировать видео',
   'video_trim': 'Обрезать Видео',
 
   // Video Trim
