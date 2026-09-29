@@ -2,6 +2,7 @@ const Map<String, String> esTranslations = {
   // App Basic
   'video_converter': 'Convertidor de Video',
   'select_video': 'Seleccionar Video',
+  'selected_video_count': '@count videos seleccionados',
   'select_video_file': 'Seleccionar Archivo de Video',
   'tap_to_select_video': 'Toca para seleccionar un video',
   'convert': 'Convertir',

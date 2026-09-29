@@ -2,6 +2,7 @@ const Map<String, String> ruTranslations = {
   // App Basic
   'video_converter': 'Конвертер Видео',
   'select_video': 'Выбрать Видео',
+  'selected_video_count': 'Выбрано видео: @count',
   'select_video_file': 'Выбрать Видео Файл',
   'tap_to_select_video': 'Нажмите, чтобы выбрать видео',
   'convert': 'Конвертировать',

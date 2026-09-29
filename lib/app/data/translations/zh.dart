@@ -2,6 +2,7 @@ const Map<String, String> zhTranslations = {
   // App Basic
   'video_converter': '视频转换器',
   'select_video': '选择视频',
+  'selected_video_count': '已选择 @count 个视频',
   'select_video_file': '选择视频文件',
   'tap_to_select_video': '点击选择视频',
   'convert': '转换',

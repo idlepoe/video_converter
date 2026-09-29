@@ -2,6 +2,7 @@ const Map<String, String> koTranslations = {
   // App Basic
   'video_converter': 'WebP 변환기',
   'select_video': '비디오 선택',
+  'selected_video_count': '선택한 영상 @count개',
   'select_video_file': '비디오 파일 선택',
   'tap_to_select_video': '비디오를 선택하려면 탭하세요',
   'convert': '변환',

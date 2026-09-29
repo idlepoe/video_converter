@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/convert_result_controller.dart';
 import '../../select_video/widgets/simple_video_player_widget.dart';
+import '../../../theme/app_theme.dart';
 
 class ConvertResultView extends GetView<ConvertResultController> {
   const ConvertResultView({super.key});
@@ -18,17 +19,13 @@ class ConvertResultView extends GetView<ConvertResultController> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF7F8FA),
         appBar: AppBar(
           title: Text(
             'conversion_complete'.tr,
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.close, color: Colors.black),
+            icon: const Icon(Icons.close_rounded),
             onPressed: () => Get.offAllNamed(Routes.SELECT_VIDEO),
           ),
         ),
@@ -38,38 +35,31 @@ class ConvertResultView extends GetView<ConvertResultController> {
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // 성공 메시지
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
                     children: [
                       const Icon(
                         Icons.check_circle,
-                        color: Colors.green,
-                        size: 36,
+                        color: AppColors.success,
+                        size: 44,
                       ),
                       const SizedBox(height: 12),
                       Text(
                         'conversion_complete_title'.tr,
                         style: const TextStyle(
-                          fontSize: 20,
+                          fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -77,7 +67,10 @@ class ConvertResultView extends GetView<ConvertResultController> {
                         controller.savedToGallery.value
                             ? 'video_saved_to_gallery'.tr
                             : 'file_ready_for_download'.tr,
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -91,17 +84,10 @@ class ConvertResultView extends GetView<ConvertResultController> {
                     return Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(20),
                         child: Column(
                           children: [
                             // 이미지 표시
@@ -175,17 +161,10 @@ class ConvertResultView extends GetView<ConvertResultController> {
                       return Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(20),
                           child: SimpleVideoPlayerWidget(
                             videoController:
                                 controller.videoPlayerController.value!,
@@ -203,14 +182,7 @@ class ConvertResultView extends GetView<ConvertResultController> {
                         height: 220,
                         decoration: BoxDecoration(
                           color: Colors.black,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+                          borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Center(
                           child: CircularProgressIndicator(color: Colors.white),
@@ -228,16 +200,8 @@ class ConvertResultView extends GetView<ConvertResultController> {
                     SizedBox(
                       width: double.infinity,
                       height: 56,
-                      child: ElevatedButton(
+                      child: FilledButton(
                         onPressed: () => controller.openGallery(),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          backgroundColor: const Color(0xFF6B7280),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                        ),
                         child: Text(
                           'view_in_gallery'.tr,
                           style: const TextStyle(

@@ -2,6 +2,7 @@ const Map<String, String> hiTranslations = {
   // App Basic
   'video_converter': 'वीडियो कन्वर्टर',
   'select_video': 'वीडियो चुनें',
+  'selected_video_count': '@count वीडियो चुने गए',
   'select_video_file': 'वीडियो फ़ाइल चुनें',
   'tap_to_select_video': 'वीडियो चुनने के लिए टैप करें',
   'convert': 'कन्वर्ट करें',

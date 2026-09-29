@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:video_converter/app/data/translations/app_translations.dart';
 import 'package:video_converter/app/services/notification_service.dart';
 import 'package:video_converter/app/services/batch_conversion_service.dart';
+import 'package:video_converter/app/theme/app_theme.dart';
 
 import 'app/routes/app_pages.dart';
 
@@ -20,22 +21,7 @@ void main() async {
       translations: AppTranslations(),
       locale: Get.deviceLocale,
       fallbackLocale: Locale('en'),
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF3182F6),
-          brightness: Brightness.light,
-        ),
-        progressIndicatorTheme: const ProgressIndicatorThemeData(
-          color: Color(0xFF3182F6),
-          linearTrackColor: Color(0xFFE5E8EB),
-        ),
-        sliderTheme: const SliderThemeData(
-          activeTrackColor: Color(0xFF3182F6),
-          thumbColor: Color(0xFF3182F6),
-          overlayColor: Color(0x223182F6),
-        ),
-      ),
+      theme: AppTheme.light,
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       debugShowCheckedModeBanner: false,

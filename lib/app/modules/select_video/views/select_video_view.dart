@@ -20,16 +20,7 @@ class SelectVideoView extends GetView<SelectVideoController> {
         if (!didPop) controller.handleBackPressed();
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF7F8FA),
-        appBar: AppBar(
-          title: Text(
-            'video_converter'.tr,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          elevation: 0,
-        ),
+        appBar: AppBar(title: Text('video_converter'.tr)),
         body: Column(
           children: [
             const ConversionStatusPanel(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../models/selected_video_item.dart';
+import '../../../theme/app_theme.dart';
 import '../controllers/select_video_controller.dart';
 
 class SelectedVideoList extends GetView<SelectVideoController> {
@@ -12,28 +13,37 @@ class SelectedVideoList extends GetView<SelectVideoController> {
     return Obx(() {
       if (controller.selectedVideos.isEmpty) return const SizedBox.shrink();
       return Container(
-        color: Colors.white,
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+        color: AppColors.surface,
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               children: [
                 Text(
-                  '${controller.selectedVideos.length}',
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+                  'selected_video_count'.trParams({
+                    'count': '${controller.selectedVideos.length}',
+                  }),
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const Spacer(),
                 IconButton(
                   onPressed: controller.isPickingVideos.value
                       ? null
                       : controller.pickVideo,
-                  icon: const Icon(Icons.add, size: 18),
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppColors.background,
+                  ),
+                  icon: const Icon(Icons.add, size: 20),
                   tooltip: 'Add videos',
                 ),
                 PopupMenuButton<String>(
                   tooltip: 'Apply settings to all',
-                  icon: const Icon(Icons.tune, size: 20),
+                  icon: const Icon(Icons.tune_rounded, size: 20),
                   onSelected: (value) {
                     if (value == 'custom') {
                       controller.showBatchOptions(context);
@@ -57,8 +67,9 @@ class SelectedVideoList extends GetView<SelectVideoController> {
                 ),
               ],
             ),
+            const SizedBox(height: 4),
             SizedBox(
-              height: 72,
+              height: 76,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: controller.selectedVideos.length,
@@ -88,10 +99,10 @@ class _VideoCard extends GetView<SelectVideoController> {
       return GestureDetector(
         onTap: () => controller.focusVideo(item),
         child: Container(
-          width: 72,
+          width: 76,
           decoration: BoxDecoration(
             color: const Color(0xFFE5E8EB),
-            borderRadius: BorderRadius.circular(9),
+            borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: focused ? const Color(0xFF3182F6) : Colors.transparent,
               width: 3,

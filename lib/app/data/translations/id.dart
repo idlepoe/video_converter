@@ -2,6 +2,7 @@ const Map<String, String> idTranslations = {
   // App Basic
   'video_converter': 'Konverter Video',
   'select_video': 'Pilih Video',
+  'selected_video_count': '@count video dipilih',
   'select_video_file': 'Pilih File Video',
   'tap_to_select_video': 'Ketuk untuk memilih video',
   'convert': 'Konversi',

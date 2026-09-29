@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../widgets/common/custom_elevated_button.dart';
+import '../../../theme/app_theme.dart';
 
 class ConvertOptionsDialog extends StatefulWidget {
   final int originalWidth;
@@ -58,12 +59,12 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -72,22 +73,14 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
               // Title
               Text(
                 'convert_options'.tr,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 24),
 
               // Format Selection Section
               Text(
                 'output_format'.tr,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 12),
               _buildFormatSelector(),
@@ -96,11 +89,7 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
               // Resolution Section
               Text(
                 'resolution'.tr,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 12),
               _buildResolutionOptions(),
@@ -124,8 +113,8 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
                     child: CustomElevatedButton(
                       onPressed: () => Navigator.pop(context),
                       text: 'cancel'.tr,
-                      backgroundColor: const Color(0xFF9CA3AF),
-                      foregroundColor: Colors.white,
+                      backgroundColor: AppColors.background,
+                      foregroundColor: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -196,8 +185,8 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
 
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[300]!),
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(14),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -295,8 +284,8 @@ class _ConvertOptionsDialogState extends State<ConvertOptionsDialog> {
 
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[300]!),
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(14),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<int>(

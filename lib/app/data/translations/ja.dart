@@ -2,6 +2,7 @@ const Map<String, String> jaTranslations = {
   // App Basic
   'video_converter': 'ビデオコンバーター',
   'select_video': 'ビデオを選択',
+  'selected_video_count': '@count本の動画を選択',
   'select_video_file': 'ビデオファイルを選択',
   'tap_to_select_video': 'ビデオを選択するにはタップしてください',
   'convert': '変換',

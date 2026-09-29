@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:get/get.dart';
 import 'dart:io';
 
 class SimpleVideoPlayerWidget extends StatefulWidget {
@@ -77,17 +76,20 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
           children: [
             Center(
               child: SizedBox(
-                width: MediaQuery.of(context).size.width,
+                width: MediaQuery.of(context).size.width - 32,
                 height: widget.maxVideoHeight,
-                child: Stack(
-                  children: [
-                    Container(
-                      color: Colors.black,
-                      child: const Center(
-                        child: CircularProgressIndicator(color: Colors.white),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Stack(
+                    children: [
+                      Container(
+                        color: Colors.black,
+                        child: const Center(
+                          child: CircularProgressIndicator(color: Colors.white),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -108,110 +110,113 @@ class _SimpleVideoPlayerWidgetState extends State<SimpleVideoPlayerWidget> {
           // 비디오 플레이어
           Center(
             child: SizedBox(
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery.of(context).size.width - 32,
               height: widget.maxVideoHeight,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  if (widget.videoController.value.isInitialized) {
-                    if (widget.videoController.value.isPlaying) {
-                      widget.videoController.pause();
-                    } else {
-                      widget.videoController.play();
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    if (widget.videoController.value.isInitialized) {
+                      if (widget.videoController.value.isPlaying) {
+                        widget.videoController.pause();
+                      } else {
+                        widget.videoController.play();
+                      }
                     }
-                  }
-                },
-                child: Stack(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: widget.maxVideoHeight,
-                      color: Colors.black,
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: SizedBox(
-                          width: widget.videoController.value.size.width,
-                          height: widget.videoController.value.size.height,
-                          child: VideoPlayer(widget.videoController),
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: widget.maxVideoHeight,
+                        color: Colors.black,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: SizedBox(
+                            width: widget.videoController.value.size.width,
+                            height: widget.videoController.value.size.height,
+                            child: VideoPlayer(widget.videoController),
+                          ),
                         ),
                       ),
-                    ),
-                    // 재생/일시정지 아이콘
-                    Center(
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: Icon(
-                          widget.videoController.value.isPlaying
-                              ? Icons.pause
-                              : Icons.play_arrow,
-                          color: Colors.white,
-                          size: 40,
-                        ),
-                      ),
-                    ),
-                    // 비디오 정보 (우측 하단)
-                    Positioned(
-                      bottom: 16,
-                      right: 16,
-                      child: Container(
-                        width: 100,
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              ' ${widget.fileName}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              maxLines: 5,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              '${widget.videoWidth ?? 0} x ${widget.videoHeight ?? 0}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _formatDuration(
-                                widget.videoDuration ?? Duration.zero,
-                              ),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _formatFileSize(
-                                File(widget.filePath).lengthSync(),
-                              ),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                              ),
-                            ),
-                          ],
+                      // 재생/일시정지 아이콘
+                      Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Icon(
+                            widget.videoController.value.isPlaying
+                                ? Icons.pause
+                                : Icons.play_arrow,
+                            color: Colors.white,
+                            size: 40,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      // 비디오 정보 (우측 하단)
+                      Positioned(
+                        bottom: 14,
+                        right: 14,
+                        child: Container(
+                          width: 116,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                ' ${widget.fileName}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 5,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                '${widget.videoWidth ?? 0} x ${widget.videoHeight ?? 0}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _formatDuration(
+                                  widget.videoDuration ?? Duration.zero,
+                                ),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _formatFileSize(
+                                  File(widget.filePath).lengthSync(),
+                                ),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

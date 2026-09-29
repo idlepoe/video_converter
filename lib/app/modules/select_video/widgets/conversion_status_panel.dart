@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../models/conversion_job.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/batch_conversion_service.dart';
+import '../../../theme/app_theme.dart';
 
 class ConversionStatusPanel extends GetView<BatchConversionService> {
   const ConversionStatusPanel({super.key});
@@ -17,9 +18,14 @@ class ConversionStatusPanel extends GetView<BatchConversionService> {
       final finishedCount = controller.completedCount + controller.failedCount;
       final hasFailure = controller.failedCount > 0;
       return Material(
-        color: const Color(0xFFEFF6FF),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 6, 4, 5),
+        color: AppColors.surface,
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+          padding: const EdgeInsets.fromLTRB(12, 5, 4, 6),
+          decoration: BoxDecoration(
+            color: AppColors.softBlue,
+            borderRadius: BorderRadius.circular(14),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -32,7 +38,7 @@ class ConversionStatusPanel extends GetView<BatchConversionService> {
                         ? Icons.error_outline
                         : Icons.task_alt,
                     size: 20,
-                    color: const Color(0xFF3182F6),
+                    color: hasFailure ? AppColors.danger : AppColors.primary,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -51,7 +57,7 @@ class ConversionStatusPanel extends GetView<BatchConversionService> {
                   Text(
                     '${(progress * 100).round()}%',
                     style: const TextStyle(
-                      color: Color(0xFF4E5968),
+                      color: AppColors.textSecondary,
                       fontSize: 12,
                     ),
                   ),

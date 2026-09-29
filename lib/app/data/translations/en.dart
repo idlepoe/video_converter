@@ -2,6 +2,7 @@ const Map<String, String> enTranslations = {
   // App Basic
   'video_converter': 'Video Converter',
   'select_video': 'Select Video',
+  'selected_video_count': '@count videos selected',
   'select_video_file': 'Select Video File',
   'tap_to_select_video': 'Tap to select a video',
   'convert': 'Convert',
